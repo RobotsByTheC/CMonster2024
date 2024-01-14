@@ -20,9 +20,7 @@ public interface SwerveIO extends AutoCloseable {
 
   SwerveModule rearRight();
 
-  /**
-   * Gets the current heading of the chassis.
-   */
+  /** Gets the current heading of the chassis. */
   Rotation2d getHeading();
 
   void resetHeading(Rotation2d heading);
@@ -46,51 +44,51 @@ public interface SwerveIO extends AutoCloseable {
 
   /**
    * Gets the positions of all four modules. Modules are indexed like so:
+   *
    * <ol>
-   *   <li>Front left</li>
-   *   <li>Front right</li>
-   *   <li>Rear left</li>
-   *   <li>Rear right</li>
+   *   <li>Front left
+   *   <li>Front right
+   *   <li>Rear left
+   *   <li>Rear right
    * </ol>
    */
   default SwerveModulePosition[] getModulePositions() {
-    return new SwerveModulePosition[]{
-        frontLeft().getPosition(),
-        frontRight().getPosition(),
-        rearLeft().getPosition(),
-        rearRight().getPosition()
+    return new SwerveModulePosition[] {
+      frontLeft().getPosition(),
+      frontRight().getPosition(),
+      rearLeft().getPosition(),
+      rearRight().getPosition()
     };
   }
 
   /**
    * Gets the states of all four modules. Modules are indexed like so:
+   *
    * <ol>
-   *   <li>Front left</li>
-   *   <li>Front right</li>
-   *   <li>Rear left</li>
-   *   <li>Rear right</li>
+   *   <li>Front left
+   *   <li>Front right
+   *   <li>Rear left
+   *   <li>Rear right
    * </ol>
    */
   default SwerveModuleState[] getModuleStates() {
-    return new SwerveModuleState[]{
-        frontLeft().getState(),
-        frontRight().getState(),
-        rearLeft().getState(),
-        rearRight().getState()
+    return new SwerveModuleState[] {
+      frontLeft().getState(), frontRight().getState(), rearLeft().getState(), rearRight().getState()
     };
   }
 
   /**
    * Sets the desired states for all four modules. Module states should be indexed like so:
+   *
    * <ol>
-   *   <li>Front left</li>
-   *   <li>Front right</li>
-   *   <li>Rear left</li>
-   *   <li>Rear right</li>
+   *   <li>Front left
+   *   <li>Front right
+   *   <li>Rear left
+   *   <li>Rear right
    * </ol>
    */
   default void setDesiredModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeed);
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.maxSpeed);
     frontLeft().setDesiredState(desiredStates[0]);
     frontRight().setDesiredState(desiredStates[1]);
     rearLeft().setDesiredState(desiredStates[2]);
@@ -98,8 +96,8 @@ public interface SwerveIO extends AutoCloseable {
   }
 
   /**
-   * Resets the internal module distances to 0 meters. Future results from
-   * {@link #getModulePositions()} will return distance values relative to their current positions.
+   * Resets the internal module distances to 0 meters. Future results from {@link
+   * #getModulePositions()} will return distance values relative to their current positions.
    */
   default void resetEncoders() {
     frontLeft().resetEncoders();

@@ -10,9 +10,8 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
-
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
@@ -67,19 +66,22 @@ public class MAXSwerveModuleIO implements ModuleIO {
     // Apply position and velocity conversion factors for the driving encoder. The
     // native units for position and velocity are rotations and RPM, respectively,
     // but we want meters and meters per second to use with WPILib's swerve APIs.
-    drivingEncoder.setPositionConversionFactor(Constants.ModuleConstants.kDrivingEncoderPositionFactor.in(Meters));
-    drivingEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kDrivingEncoderVelocityFactor.in(MetersPerSecond));
+    drivingEncoder.setPositionConversionFactor(
+        Constants.ModuleConstants.drivingEncoderPositionFactor.in(Meters));
+    drivingEncoder.setVelocityConversionFactor(
+        Constants.ModuleConstants.drivingEncoderVelocityFactor.in(MetersPerSecond));
 
     // Set the PID gains for the driving motor.
-    drivingPIDController.setP(Constants.ModuleConstants.kDrivingP);
-    drivingPIDController.setI(Constants.ModuleConstants.kDrivingI);
-    drivingPIDController.setD(Constants.ModuleConstants.kDrivingD);
-    drivingPIDController.setFF(Constants.ModuleConstants.kDrivingFF);
-    drivingPIDController.setOutputRange(Constants.ModuleConstants.kDrivingMinOutput,
-        Constants.ModuleConstants.kDrivingMaxOutput);
+    drivingPIDController.setP(Constants.ModuleConstants.drivingP);
+    drivingPIDController.setI(Constants.ModuleConstants.drivingI);
+    drivingPIDController.setD(Constants.ModuleConstants.drivingD);
+    drivingPIDController.setFF(Constants.ModuleConstants.drivingFF);
+    drivingPIDController.setOutputRange(
+        Constants.ModuleConstants.drivingMinOutput, Constants.ModuleConstants.drivingMaxOutput);
 
-    drivingSparkMax.setIdleMode(Constants.ModuleConstants.kDrivingMotorIdleMode);
-    drivingSparkMax.setSmartCurrentLimit((int) Constants.ModuleConstants.kDrivingMotorCurrentLimit.in(Amps));
+    drivingSparkMax.setIdleMode(Constants.ModuleConstants.drivingMotorIdleMode);
+    drivingSparkMax.setSmartCurrentLimit(
+        (int) Constants.ModuleConstants.drivingMotorCurrentLimit.in(Amps));
   }
 
   private void configureTurningController() {
@@ -89,31 +91,36 @@ public class MAXSwerveModuleIO implements ModuleIO {
     // Apply position and velocity conversion factors for the turning encoder. We
     // want these in radians and radians per second to use with WPILib's swerve
     // APIs.
-    turningEncoder.setPositionConversionFactor(Constants.ModuleConstants.kTurningEncoderPositionFactor.in(Radians));
-    turningEncoder.setVelocityConversionFactor(Constants.ModuleConstants.kTurningEncoderVelocityFactor.in(RadiansPerSecond));
+    turningEncoder.setPositionConversionFactor(
+        Constants.ModuleConstants.turningEncoderPositionFactor.in(Radians));
+    turningEncoder.setVelocityConversionFactor(
+        Constants.ModuleConstants.turningEncoderVelocityFactor.in(RadiansPerSecond));
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
-    turningEncoder.setInverted(Constants.ModuleConstants.kTurningEncoderInverted);
+    turningEncoder.setInverted(Constants.ModuleConstants.turningEncoderInverted);
 
     // Enable PID wrap around for the turning motor. This will allow the PID
     // controller to go through 0 to get to the setpoint i.e. going from 350 degrees
     // to 10 degrees will go through 0 rather than the other direction which is a
     // longer route.
     turningPIDController.setPositionPIDWrappingEnabled(true);
-    turningPIDController.setPositionPIDWrappingMinInput(Constants.ModuleConstants.kTurningEncoderPositionPIDMinInput.in(Radians));
-    turningPIDController.setPositionPIDWrappingMaxInput(Constants.ModuleConstants.kTurningEncoderPositionPIDMaxInput.in(Radians));
+    turningPIDController.setPositionPIDWrappingMinInput(
+        Constants.ModuleConstants.turningEncoderPositionPIDMinInput.in(Radians));
+    turningPIDController.setPositionPIDWrappingMaxInput(
+        Constants.ModuleConstants.turningEncoderPositionPIDMaxInput.in(Radians));
 
     // Set the PID gains for the turning motor.
-    turningPIDController.setP(Constants.ModuleConstants.kTurningP);
-    turningPIDController.setI(Constants.ModuleConstants.kTurningI);
-    turningPIDController.setD(Constants.ModuleConstants.kTurningD);
-    turningPIDController.setFF(Constants.ModuleConstants.kTurningFF);
-    turningPIDController.setOutputRange(Constants.ModuleConstants.kTurningMinOutput,
-        Constants.ModuleConstants.kTurningMaxOutput);
+    turningPIDController.setP(Constants.ModuleConstants.turningP);
+    turningPIDController.setI(Constants.ModuleConstants.turningI);
+    turningPIDController.setD(Constants.ModuleConstants.turningD);
+    turningPIDController.setFF(Constants.ModuleConstants.turningFF);
+    turningPIDController.setOutputRange(
+        Constants.ModuleConstants.turningMinOutput, Constants.ModuleConstants.turningMaxOutput);
 
-    turningSparkMax.setIdleMode(Constants.ModuleConstants.kTurningMotorIdleMode);
-    turningSparkMax.setSmartCurrentLimit((int) Constants.ModuleConstants.kTurningMotorCurrentLimit.in(Amps));
+    turningSparkMax.setIdleMode(Constants.ModuleConstants.turningMotorIdleMode);
+    turningSparkMax.setSmartCurrentLimit(
+        (int) Constants.ModuleConstants.turningMotorCurrentLimit.in(Amps));
   }
 
   @Override
@@ -134,7 +141,8 @@ public class MAXSwerveModuleIO implements ModuleIO {
   @Override
   public void setDesiredState(SwerveModuleState state) {
     // Command driving and turning SPARKS MAX towards their respective setpoints.
-    drivingPIDController.setReference(state.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
+    drivingPIDController.setReference(
+        state.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
     turningPIDController.setReference(state.angle.getRadians(), CANSparkMax.ControlType.kPosition);
   }
 

@@ -50,32 +50,26 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     FIELD
   }
 
-  /**
-   * Creates a new DriveSubsystem.
-   */
+  /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveIO io) {
     this.io = io;
 
-    poseEstimator = new SwerveDrivePoseEstimator(
-        DriveConstants.kDriveKinematics,
-        Rotation2d.fromDegrees(0),
-        io.getModulePositions(),
-        new Pose2d(Feet.zero(), Feet.zero(), new Rotation2d(Degrees.zero())),
-        // Use default standard deviations of ±4" and ±6° for odometry-derived position data
-        // (i.e. 86% of results will be within 4" and 6° of the true value, and 95% will be within
-        // ±8" and ±12°)
-        VecBuilder.fill(
-            Inches.of(4).in(Meters),
-            Inches.of(4).in(Meters),
-            Degrees.of(6).in(Radians)
-        ),
-        // Use default standard deviations of ±35" and ±52° for vision-system derived position data
-        VecBuilder.fill(
-            Inches.of(35).in(Meters),
-            Inches.of(35).in(Meters),
-            Degrees.of(52).in(Radians)
-        )
-    );
+    poseEstimator =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.driveKinematics,
+            Rotation2d.fromDegrees(0),
+            io.getModulePositions(),
+            new Pose2d(Feet.zero(), Feet.zero(), new Rotation2d(Degrees.zero())),
+            // Use default standard deviations of ±4" and ±6° for odometry-derived position data
+            // (i.e. 86% of results will be within 4" and 6° of the true value, and 95% will be
+            // within
+            // ±8" and ±12°)
+            VecBuilder.fill(
+                Inches.of(4).in(Meters), Inches.of(4).in(Meters), Degrees.of(6).in(Radians)),
+            // Use default standard deviations of ±35" and ±52° for vision-system derived position
+            // data
+            VecBuilder.fill(
+                Inches.of(35).in(Meters), Inches.of(35).in(Meters), Degrees.of(52).in(Radians)));
 
     SmartDashboard.putData("Field", field);
 
@@ -104,7 +98,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     // Track absolute velocity and acceleration. Assumes a nominal 20ms update rate.
     double velocity = lastPose.getTranslation().getDistance(getPose().getTranslation()) / 0.020;
     SmartDashboard.putNumber("Linear Velocity (mps)", velocity);
-    SmartDashboard.putNumber("Linear Acceleration (mps^2)", Math.abs(velocity - lastVelocity) / 0.020);
+    SmartDashboard.putNumber(
+        "Linear Acceleration (mps^2)", Math.abs(velocity - lastVelocity) / 0.020);
 
     lastPose = getPose();
     lastVelocity = velocity;
@@ -132,19 +127,21 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   /**
    * Method to drive the robot using joystick info.
    *
-   * @param xSpeed      Speed of the robot in the x direction (forward)
-   * @param ySpeed      Speed of the robot in the y direction (sideways).
-   * @param rot         Angular rate of the robot.
+   * @param xSpeed Speed of the robot in the x direction (forward)
+   * @param ySpeed Speed of the robot in the y direction (sideways).
+   * @param rot Angular rate of the robot.
    * @param orientation What reference frame the speeds are in
    */
-  public void drive(Measure<Velocity<Distance>> xSpeed,
-                    Measure<Velocity<Distance>> ySpeed,
-                    Measure<Velocity<Angle>> rot,
-                    ReferenceFrame orientation) {
-    var speeds = switch (orientation) {
-      case ROBOT -> new ChassisSpeeds(xSpeed, ySpeed, rot);
-      case FIELD -> ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, io.getHeading());
-    };
+  public void drive(
+      Measure<Velocity<Distance>> xSpeed,
+      Measure<Velocity<Distance>> ySpeed,
+      Measure<Velocity<Angle>> rot,
+      ReferenceFrame orientation) {
+    var speeds =
+        switch (orientation) {
+          case ROBOT -> new ChassisSpeeds(xSpeed, ySpeed, rot);
+          case FIELD -> ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, io.getHeading());
+        };
     drive(speeds);
   }
 
@@ -155,35 +152,28 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    * @param speeds the speeds at which the robot should move
    */
   public void drive(ChassisSpeeds speeds) {
-    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+    var swerveModuleStates = DriveConstants.driveKinematics.toSwerveModuleStates(speeds);
 
     io.setDesiredModuleStates(swerveModuleStates);
   }
 
-  /**
-   * Sets the wheels into an X formation to prevent movement.
-   */
+  /** Sets the wheels into an X formation to prevent movement. */
   public void setX() {
     io.setDesiredModuleStates(
-        new SwerveModuleState[]{
-            new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
-            new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-            new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
-            new SwerveModuleState(0, Rotation2d.fromDegrees(45))
-        }
-    );
+        new SwerveModuleState[] {
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(-45)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(45))
+        });
   }
 
-  /**
-   * Resets the drive encoders to currently read a position of 0.
-   */
+  /** Resets the drive encoders to currently read a position of 0. */
   public void resetEncoders() {
     io.resetEncoders();
   }
 
-  /**
-   * Zeroes the heading of the robot.
-   */
+  /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     io.zeroHeading();
   }
@@ -211,63 +201,77 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     if (traj == null) {
       // Couldn't find that trajectory, return a command that does nothing
       DriverStation.reportError(
-          "Could not find trajectory " + trajectoryName
-              + ". Make sure the file exists in the src/main/deploy/choreo/ directory and the file name is spelled correctly.",
+          "Could not find trajectory "
+              + trajectoryName
+              + ". Make sure the file exists in the src/main/deploy/choreo/ directory and "
+              + "the file name is spelled correctly.",
           false);
       return new InstantCommand(() -> {});
     }
 
-    Command followTrajectory = Choreo.choreoSwerveCommand(
-        traj,
-        this::getPose,
-        new PIDController(Constants.AutoConstants.kPXController, 0, 0),
-        new PIDController(Constants.AutoConstants.kPYController, 0, 0),
-        new PIDController(Constants.AutoConstants.kPThetaController, 0, 0),
-        this::drive,
-        () -> false,
-        this
-    );
+    Command followTrajectory =
+        Choreo.choreoSwerveCommand(
+            traj,
+            this::getPose,
+            new PIDController(Constants.AutoConstants.pXController, 0, 0),
+            new PIDController(Constants.AutoConstants.pYController, 0, 0),
+            new PIDController(Constants.AutoConstants.pThetaController, 0, 0),
+            this::drive,
+            () -> false,
+            this);
     followTrajectory.setName(trajectoryName);
 
-    return runOnce(() -> {
-      // Reset gyro heading and internal odometry to the starting pose of the trajectory.
-      // This assumes the robot is already more-or-less at this pose!
-      resetOdometry(traj.getInitialPose());
-    }).andThen(followTrajectory);
+    return runOnce(
+            () -> {
+              // Reset gyro heading and internal odometry to the starting pose of the trajectory.
+              // This assumes the robot is already more-or-less at this pose!
+              resetOdometry(traj.getInitialPose());
+            })
+        .andThen(followTrajectory);
   }
 
   public Command setXCommand() {
-    return run(this::setX).until(() -> {
-      return Arrays.stream(getModuleStates())
-          .allMatch(state -> (Math.abs(state.speedMetersPerSecond) <= 0.01) && (Math.abs(state.angle.getDegrees() % 45) <= 1));
-    }).withName("Set X");
+    return run(this::setX)
+        .until(
+            () -> {
+              return Arrays.stream(getModuleStates())
+                  .allMatch(
+                      state -> {
+                        double v = Math.abs(state.speedMetersPerSecond);
+                        double angle = state.angle.getDegrees();
+                        return v <= 0.01 && Math.abs(angle % 45) <= 1;
+                      });
+            })
+        .withName("Set X");
   }
 
   /**
    * Creates a command that uses joystick inputs to drive the robot. The speeds are field-relative.
    *
    * @param x a supplier for the relative speed that the robot should move on the field's X-axis, as
-   *          a number from -1 (towards the alliance all) to +1 (towards the opposing alliance wall).
+   *     a number from -1 (towards the alliance all) to +1 (towards the opposing alliance wall).
    * @param y a supplier for the relative speed that the robot should move on the field's Y-axis, as
-   *          a number from -1 (towards the right side of the field) to +1 (towards the left side of
-   *          the field).
-   * @param ω a supplier for the relative speed that the robot should spin about its own axis, as a
-   *          number from -1 (maximum clockwise speed) to +1 (maximum counter-clockwise speed).
+   *     a number from -1 (towards the right side of the field) to +1 (towards the left side of the
+   *     field).
+   * @param omega a supplier for the relative speed that the robot should spin about its own axis,
+   *     as a number from -1 (maximum clockwise speed) to +1 (maximum counter-clockwise speed).
    * @return the driving command
    */
-  @SuppressWarnings("NonAsciiCharacters")
-  public Command driveWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier ω) {
+  public Command driveWithJoysticks(DoubleSupplier x, DoubleSupplier y, DoubleSupplier omega) {
     var xSpeed = MutableMeasure.zero(MetersPerSecond);
     var ySpeed = MutableMeasure.zero(MetersPerSecond);
-    var ωSpeed = MutableMeasure.zero(RadiansPerSecond);
+    var omegaSpeed = MutableMeasure.zero(RadiansPerSecond);
 
     return run(() -> {
-      xSpeed.mut_setMagnitude(x.getAsDouble() * DriveConstants.kMaxSpeed.in(MetersPerSecond));
-      ySpeed.mut_setMagnitude(y.getAsDouble() * DriveConstants.kMaxSpeed.in(MetersPerSecond));
-      ωSpeed.mut_setMagnitude(ω.getAsDouble() * DriveConstants.kMaxAngularSpeed.in(RadiansPerSecond));
+          xSpeed.mut_setMagnitude(x.getAsDouble() * DriveConstants.maxSpeed.in(MetersPerSecond));
+          ySpeed.mut_setMagnitude(y.getAsDouble() * DriveConstants.maxSpeed.in(MetersPerSecond));
+          omegaSpeed.mut_setMagnitude(
+              omega.getAsDouble() * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 
-      drive(xSpeed, ySpeed, ωSpeed, ReferenceFrame.FIELD);
-    }).finallyDo(this::setX).withName("Drive With Joysticks");
+          drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
+        })
+        .finallyDo(this::setX)
+        .withName("Drive With Joysticks");
   }
 
   @Override

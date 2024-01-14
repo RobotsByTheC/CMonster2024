@@ -3,7 +3,7 @@ package frc.robot.subsystems.drive.swerve;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static frc.robot.Constants.ModuleConstants.kWheelCircumference;
+import static frc.robot.Constants.ModuleConstants.wheelCircumference;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -46,7 +46,9 @@ public class SimModuleIO implements ModuleIO {
 
   private void update(double timestep) {
     // Set simulation motor voltages based on the commanded inputs to the module
-    double driveVolts = drivePID.calculate(getWheelVelocity()) + driveFeedForward.calculate(desiredState.speedMetersPerSecond);
+    double driveVolts =
+        drivePID.calculate(getWheelVelocity())
+            + driveFeedForward.calculate(desiredState.speedMetersPerSecond);
     double turnVolts = turnPID.calculate(getModuleRotation().getRadians());
 
     lastVoltage = driveVolts;
@@ -56,7 +58,8 @@ public class SimModuleIO implements ModuleIO {
 
     // Write "sensor" values by integrating the simulated velocities over the past timestep
     currentPosition.angle =
-        currentPosition.angle.plus(Rotation2d.fromRadians(sim.getTurnVelocity().in(RadiansPerSecond) * timestep));
+        currentPosition.angle.plus(
+            Rotation2d.fromRadians(sim.getTurnVelocity().in(RadiansPerSecond) * timestep));
     currentPosition.distanceMeters += getWheelVelocity() * timestep;
   }
 
@@ -110,6 +113,6 @@ public class SimModuleIO implements ModuleIO {
    * @return the tangential speed of the wheel in meters per second.
    */
   private double wheelSpeedFromAngular(Measure<Velocity<Angle>> angularWheelVelocity) {
-    return angularWheelVelocity.in(RotationsPerSecond) * kWheelCircumference.in(Meters);
+    return angularWheelVelocity.in(RotationsPerSecond) * wheelCircumference.in(Meters);
   }
 }

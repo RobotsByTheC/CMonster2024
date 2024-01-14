@@ -1,56 +1,52 @@
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.DriveConstants.kFrontLeftChassisAngularOffset;
-import static frc.robot.Constants.DriveConstants.kFrontLeftDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kFrontLeftTurningCanId;
-import static frc.robot.Constants.DriveConstants.kFrontRightDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kFrontRightTurningCanId;
-import static frc.robot.Constants.DriveConstants.kRearLeftDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kRearLeftTurningCanId;
-import static frc.robot.Constants.DriveConstants.kRearRightDrivingCanId;
-import static frc.robot.Constants.DriveConstants.kRearRightTurningCanId;
+import static frc.robot.Constants.DriveConstants.frontLeftChassisAngularOffset;
+import static frc.robot.Constants.DriveConstants.frontLeftDrivingCanId;
+import static frc.robot.Constants.DriveConstants.frontLeftTurningCanId;
+import static frc.robot.Constants.DriveConstants.frontRightDrivingCanId;
+import static frc.robot.Constants.DriveConstants.frontRightTurningCanId;
+import static frc.robot.Constants.DriveConstants.rearLeftDrivingCanId;
+import static frc.robot.Constants.DriveConstants.rearLeftTurningCanId;
+import static frc.robot.Constants.DriveConstants.rearRightDrivingCanId;
+import static frc.robot.Constants.DriveConstants.rearRightTurningCanId;
 
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.ADIS16470_IMU;
 import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
-import frc.robot.subsystems.drive.swerve.SwerveModule;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
+import frc.robot.subsystems.drive.swerve.SwerveModule;
 
 /**
  * IO for a swerve drive using REV MAXSwerve modules driven by a NEO motor and turned by a NEO 550
  * motor.
  */
 public class MAXSwerveIO implements SwerveIO {
-  private final SwerveModule frontLeft = new SwerveModule(
-      new MAXSwerveModuleIO(
-          new CANSparkMax(kFrontLeftDrivingCanId, MotorType.kBrushless),
-          new CANSparkMax(kFrontLeftTurningCanId, MotorType.kBrushless)
-      ),
-      kFrontLeftChassisAngularOffset
-  );
-  private final SwerveModule frontRight = new SwerveModule(
-      new MAXSwerveModuleIO(
-          new CANSparkMax(kFrontRightDrivingCanId, MotorType.kBrushless),
-          new CANSparkMax(kFrontRightTurningCanId, MotorType.kBrushless)
-      ),
-      kFrontLeftChassisAngularOffset
-  );
-  private final SwerveModule rearLeft = new SwerveModule(
-      new MAXSwerveModuleIO(
-          new CANSparkMax(kRearLeftDrivingCanId, MotorType.kBrushless),
-          new CANSparkMax(kRearLeftTurningCanId, MotorType.kBrushless)
-      ),
-      kFrontLeftChassisAngularOffset
-  );
-  private final SwerveModule rearRight = new SwerveModule(
-      new MAXSwerveModuleIO(
-          new CANSparkMax(kRearRightDrivingCanId, MotorType.kBrushless),
-          new CANSparkMax(kRearRightTurningCanId, MotorType.kBrushless)
-      ),
-      kFrontLeftChassisAngularOffset
-  );
+  private final SwerveModule frontLeft =
+      new SwerveModule(
+          new MAXSwerveModuleIO(
+              new CANSparkMax(frontLeftDrivingCanId, MotorType.kBrushless),
+              new CANSparkMax(frontLeftTurningCanId, MotorType.kBrushless)),
+          frontLeftChassisAngularOffset);
+  private final SwerveModule frontRight =
+      new SwerveModule(
+          new MAXSwerveModuleIO(
+              new CANSparkMax(frontRightDrivingCanId, MotorType.kBrushless),
+              new CANSparkMax(frontRightTurningCanId, MotorType.kBrushless)),
+          frontLeftChassisAngularOffset);
+  private final SwerveModule rearLeft =
+      new SwerveModule(
+          new MAXSwerveModuleIO(
+              new CANSparkMax(rearLeftDrivingCanId, MotorType.kBrushless),
+              new CANSparkMax(rearLeftTurningCanId, MotorType.kBrushless)),
+          frontLeftChassisAngularOffset);
+  private final SwerveModule rearRight =
+      new SwerveModule(
+          new MAXSwerveModuleIO(
+              new CANSparkMax(rearRightDrivingCanId, MotorType.kBrushless),
+              new CANSparkMax(rearRightTurningCanId, MotorType.kBrushless)),
+          frontLeftChassisAngularOffset);
 
   // The gyro sensor
   private final ADIS16470_IMU gyro = new ADIS16470_IMU();

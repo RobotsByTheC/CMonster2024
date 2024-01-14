@@ -1,8 +1,8 @@
 package frc.robot.sim;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static frc.robot.Constants.ModuleConstants.kDrivingMotorReduction;
-import static frc.robot.Constants.ModuleConstants.kTurningMotorReduction;
+import static frc.robot.Constants.ModuleConstants.drivingMotorReduction;
+import static frc.robot.Constants.ModuleConstants.turningMotorReduction;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Angle;
@@ -21,12 +21,14 @@ public class MAXSwerveModuleSim implements MechanismSim {
   // The wheel simulation has a much higher moment of inertia than the physical wheel in order to
   // account for the inertia of the rest of the robot. (This is a /very/ rough approximation)
   private final FlywheelSim wheelSim =
-      new FlywheelSim(DCMotor.getNEO(1), kDrivingMotorReduction, 0.025);
+      new FlywheelSim(DCMotor.getNEO(1), drivingMotorReduction, 0.025);
   private final FlywheelSim turnSim =
-      new FlywheelSim(DCMotor.getNeo550(1), kTurningMotorReduction, 0.001);
+      new FlywheelSim(DCMotor.getNeo550(1), turningMotorReduction, 0.001);
 
-  private final MutableMeasure<Velocity<Angle>> wheelVelocity = MutableMeasure.zero(RadiansPerSecond);
-  private final MutableMeasure<Velocity<Angle>> turnVelocity = MutableMeasure.zero(RadiansPerSecond);
+  private final MutableMeasure<Velocity<Angle>> wheelVelocity =
+      MutableMeasure.zero(RadiansPerSecond);
+  private final MutableMeasure<Velocity<Angle>> turnVelocity =
+      MutableMeasure.zero(RadiansPerSecond);
 
   public MAXSwerveModuleSim() {
     SimulationContext.getDefault().addMechanism(this);
@@ -51,16 +53,12 @@ public class MAXSwerveModuleSim implements MechanismSim {
     turnSim.setInputVoltage(outputVoltage(volts));
   }
 
-  /**
-   * Gets the angular velocity of the wheel.
-   */
+  /** Gets the angular velocity of the wheel. */
   public Measure<Velocity<Angle>> getWheelVelocity() {
     return wheelVelocity;
   }
 
-  /**
-   * Gets the angular velocity of the azimuth control.
-   */
+  /** Gets the angular velocity of the azimuth control. */
   public Measure<Velocity<Angle>> getTurnVelocity() {
     return turnVelocity;
   }

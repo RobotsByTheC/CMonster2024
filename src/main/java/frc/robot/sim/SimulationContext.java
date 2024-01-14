@@ -9,8 +9,8 @@ import java.util.Collection;
 /**
  * Responsible for coordinating periodic simulation updates. Provide a {@link BatterySim battery}
  * and a set of {@link MechanismSim mechanisms} to simulate, then call {@link #update(double)} to
- * step the simulation forward. It is recommended to call {@code update} in a robot's
- * {@link TimedRobot#simulationPeriodic()} method.
+ * step the simulation forward. It is recommended to call {@code update} in a robot's {@link
+ * TimedRobot#simulationPeriodic()} method.
  */
 public class SimulationContext {
   private final BatterySim battery;
@@ -21,10 +21,9 @@ public class SimulationContext {
       new SimulationContext(PerfectBatterySim.nominal());
 
   /**
-   * Gets the default simulation context. Useful for convenient simulation registration,
-   * but should not be used in unit tests. The simulation uses a nominal 12-volt battery
-   * with no capacity loss over time, i.e. it will always output exactly 12 volts when
-   * not under load.
+   * Gets the default simulation context. Useful for convenient simulation registration, but should
+   * not be used in unit tests. The simulation uses a nominal 12-volt battery with no capacity loss
+   * over time, i.e. it will always output exactly 12 volts when not under load.
    */
   public static SimulationContext getDefault() {
     return defaultSimulation;
@@ -49,7 +48,7 @@ public class SimulationContext {
    * Adds a mechanism to the simulation.
    *
    * @param mechanism the mechanism to add
-   * @param <M>       the type of the mechanism simulation
+   * @param <M> the type of the mechanism simulation
    * @return the added mechanism, or null if the mechanism could not be added
    */
   public <M extends MechanismSim> M addMechanism(M mechanism) {
@@ -98,10 +97,10 @@ public class SimulationContext {
 
   /**
    * Updates the simulation by moving it forward one timestep. This will update all the mechanism
-   * simulations currently in this context and update the robot's battery voltage to account for
-   * the voltage drop caused by the currents drawn by all the mechanisms. The voltage can be read
-   * via {@link RobotController#getBatteryVoltage()} or from a mechanism simulation's
-   * {@link MechanismSim#getBatteryVoltage()} convenience method.
+   * simulations currently in this context and update the robot's battery voltage to account for the
+   * voltage drop caused by the currents drawn by all the mechanisms. The voltage can be read via
+   * {@link RobotController#getBatteryVoltage()} or from a mechanism simulation's {@link
+   * MechanismSim#getBatteryVoltage()} convenience method.
    *
    * @param timestep how far forward to move the simulation, in seconds.
    */

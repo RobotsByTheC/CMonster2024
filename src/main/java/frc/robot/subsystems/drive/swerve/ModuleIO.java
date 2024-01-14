@@ -8,16 +8,14 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
  * higher-level inputs (eg a target module angle or wheel velocity).
  */
 public interface ModuleIO extends AutoCloseable {
-  /**
-   * Gets the current tangential linear speed of the wheel, in meters per second.
-   */
+  /** Gets the current tangential linear speed of the wheel, in meters per second. */
   double getWheelVelocity();
 
   /**
    * Gets the total distance driven by the wheel since the beginning of the simulation. This
    * distance can be reset to zero by calling {@link #resetEncoders()} at any time.
    *
-   * <p>Wheel distances are measured in meters.</p>
+   * <p>Wheel distances are measured in meters.
    */
   double getWheelDistance();
 
@@ -27,14 +25,10 @@ public interface ModuleIO extends AutoCloseable {
    */
   Rotation2d getModuleRotation();
 
-  /**
-   * Sets the desired state (speed and angle) of the module.
-   */
+  /** Sets the desired state (speed and angle) of the module. */
   void setDesiredState(SwerveModuleState state);
 
-  /**
-   * Immediately stops all motors.
-   */
+  /** Immediately stops all motors. */
   void stop();
 
   /**
@@ -44,9 +38,7 @@ public interface ModuleIO extends AutoCloseable {
    */
   void resetEncoders();
 
-  /**
-   * Closes the IO object and frees or destroys any held resources.
-   */
+  /** Closes the IO object and frees or destroys any held resources. */
   @Override
   void close();
 }

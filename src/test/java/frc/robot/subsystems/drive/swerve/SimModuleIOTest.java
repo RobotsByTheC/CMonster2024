@@ -1,7 +1,6 @@
 package frc.robot.subsystems.drive.swerve;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -43,7 +42,8 @@ class SimModuleIOTest {
     for (int i = 0; i < 50; i++) {
       SimulationContext.getDefault().update(0.02);
     }
-    assertEquals(targetMps, io.getWheelVelocity(), 0.05, "Wheel velocity did not converge within 1 second");
+    assertEquals(
+        targetMps, io.getWheelVelocity(), 0.05, "Wheel velocity did not converge within 1 second");
   }
 
   @Test
@@ -53,7 +53,8 @@ class SimModuleIOTest {
     for (int i = 0; i < 50; i++) {
       SimulationContext.getDefault().update(0.02);
     }
-    assertEquals(targetMps, io.getWheelVelocity(), 0.05, "Wheel velocity did not converge within 1 second");
+    assertEquals(
+        targetMps, io.getWheelVelocity(), 0.05, "Wheel velocity did not converge within 1 second");
   }
 
   @Test

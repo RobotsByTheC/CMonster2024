@@ -13,11 +13,13 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 public class SwerveModule implements AutoCloseable, Sendable {
   /** The I/O layer used to communicate with the module hardware. */
   private final ModuleIO io;
+
   /**
-   * The angular offset of this module relative to the center of the chassis.
-   * An angle of 0 is straight forward, with positive values increasing counter-clockwise.
+   * The angular offset of this module relative to the center of the chassis. An angle of 0 is
+   * straight forward, with positive values increasing counter-clockwise.
    */
   private final Rotation2d angularOffset;
+
   private SwerveModuleState targetState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
 
   /**
@@ -40,9 +42,7 @@ public class SwerveModule implements AutoCloseable, Sendable {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModuleState(
-        io.getWheelVelocity(),
-        io.getModuleRotation().minus(angularOffset)
-    );
+        io.getWheelVelocity(), io.getModuleRotation().minus(angularOffset));
   }
 
   /**
@@ -54,9 +54,7 @@ public class SwerveModule implements AutoCloseable, Sendable {
     // Apply chassis angular offset to the encoder position to get the position
     // relative to the chassis.
     return new SwerveModulePosition(
-        io.getWheelDistance(),
-        io.getModuleRotation().minus(angularOffset)
-    );
+        io.getWheelDistance(), io.getModuleRotation().minus(angularOffset));
   }
 
   /**
@@ -66,10 +64,9 @@ public class SwerveModule implements AutoCloseable, Sendable {
    */
   public void setDesiredState(SwerveModuleState desiredState) {
     // Apply chassis angular offset to the desired state.
-    var correctedState = new SwerveModuleState(
-        desiredState.speedMetersPerSecond,
-        desiredState.angle.plus(angularOffset)
-    );
+    var correctedState =
+        new SwerveModuleState(
+            desiredState.speedMetersPerSecond, desiredState.angle.plus(angularOffset));
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
     var optimizedState = SwerveModuleState.optimize(correctedState, io.getModuleRotation());
@@ -78,16 +75,12 @@ public class SwerveModule implements AutoCloseable, Sendable {
     io.setDesiredState(optimizedState);
   }
 
-  /**
-   * Zeroes all the swerve module encoders.
-   */
+  /** Zeroes all the swerve module encoders. */
   public void resetEncoders() {
     io.resetEncoders();
   }
 
-  /**
-   * Immediately stops all motors on the module and halts movement.
-   */
+  /** Immediately stops all motors on the module and halts movement. */
   public void stop() {
     io.stop();
   }

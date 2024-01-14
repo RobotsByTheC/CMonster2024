@@ -4,13 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -25,7 +23,7 @@ import frc.robot.subsystems.drive.SimSwerveIO;
  */
 public class RobotContainer {
   // The robot's subsystems
-  private final DriveSubsystem m_robotDrive;
+  private final DriveSubsystem robotDrive;
 
   enum AutoType {
     NOTHING,
@@ -36,23 +34,24 @@ public class RobotContainer {
   private final SendableChooser<AutoType> autoChooser = new SendableChooser<>();
 
   // The driver's controller
-  private final XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
+  private final XboxController driverController =
+      new XboxController(OIConstants.driverControllerPort);
 
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
+  /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     if (Robot.isSimulation()) {
-      m_robotDrive = new DriveSubsystem(new SimSwerveIO());
+      robotDrive = new DriveSubsystem(new SimSwerveIO());
     } else {
-      m_robotDrive = new DriveSubsystem(new MAXSwerveIO());
+      robotDrive = new DriveSubsystem(new MAXSwerveIO());
     }
 
     // Configure the button bindings
     configureButtonBindings();
 
     // Configure default commands
-    m_robotDrive.setDefaultCommand(m_robotDrive.driveWithJoysticks(m_driverController::getLeftY, m_driverController::getLeftX, m_driverController::getRightX));
+    robotDrive.setDefaultCommand(
+        robotDrive.driveWithJoysticks(
+            driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
 
     SmartDashboard.putNumber("Linear P", 5);
     SmartDashboard.putNumber("Angular P", 2);
@@ -66,17 +65,13 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your button->command mappings. Buttons can be
-   * created by
-   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its
-   * subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling
-   * passing it to a
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(m_driverController, Button.kR1.value)
-        .whileTrue(m_robotDrive.setXCommand());
+    new JoystickButton(driverController, Button.kR1.value).whileTrue(robotDrive.setXCommand());
   }
 
   /**
@@ -86,9 +81,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return switch (autoChooser.getSelected()) {
-      case NOTHING -> m_robotDrive.run(() -> {});
-      case SPRINT -> m_robotDrive.followChoreoTrajectory("sprint");
-      case GREED -> m_robotDrive.followChoreoTrajectory("greedy_notes");
+      case NOTHING -> robotDrive.run(() -> {});
+      case SPRINT -> robotDrive.followChoreoTrajectory("sprint");
+      case GREED -> robotDrive.followChoreoTrajectory("greedy_notes");
     };
   }
 }

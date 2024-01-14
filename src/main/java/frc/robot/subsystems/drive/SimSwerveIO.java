@@ -1,10 +1,10 @@
 package frc.robot.subsystems.drive;
 
-import static frc.robot.Constants.DriveConstants.kDriveKinematics;
-import static frc.robot.Constants.DriveConstants.kFrontLeftChassisAngularOffset;
-import static frc.robot.Constants.DriveConstants.kFrontRightChassisAngularOffset;
-import static frc.robot.Constants.DriveConstants.kRearLeftChassisAngularOffset;
-import static frc.robot.Constants.DriveConstants.kRearRightChassisAngularOffset;
+import static frc.robot.Constants.DriveConstants.driveKinematics;
+import static frc.robot.Constants.DriveConstants.frontLeftChassisAngularOffset;
+import static frc.robot.Constants.DriveConstants.frontRightChassisAngularOffset;
+import static frc.robot.Constants.DriveConstants.rearLeftChassisAngularOffset;
+import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.sim.Simulation;
@@ -24,22 +24,19 @@ public class SimSwerveIO implements SwerveIO {
   private Rotation2d heading = Rotation2d.fromDegrees(0);
 
   public SimSwerveIO() {
-    frontLeft = new SwerveModule(new SimModuleIO(), kFrontLeftChassisAngularOffset);
-    frontRight = new SwerveModule(new SimModuleIO(), kFrontRightChassisAngularOffset);
-    rearLeft = new SwerveModule(new SimModuleIO(), kRearLeftChassisAngularOffset);
-    rearRight = new SwerveModule(new SimModuleIO(), kRearRightChassisAngularOffset);
+    frontLeft = new SwerveModule(new SimModuleIO(), frontLeftChassisAngularOffset);
+    frontRight = new SwerveModule(new SimModuleIO(), frontRightChassisAngularOffset);
+    rearLeft = new SwerveModule(new SimModuleIO(), rearLeftChassisAngularOffset);
+    rearRight = new SwerveModule(new SimModuleIO(), rearRightChassisAngularOffset);
 
     SimulationContext.getDefault().addPeriodic(update);
   }
 
   private void update(double timestep) {
     // Compute the current chassis speeds (x, y, ω)
-    var speeds = kDriveKinematics.toChassisSpeeds(
-        frontLeft.getState(),
-        frontRight.getState(),
-        rearLeft.getState(),
-        rearRight.getState()
-    );
+    var speeds =
+        driveKinematics.toChassisSpeeds(
+            frontLeft.getState(), frontRight.getState(), rearLeft.getState(), rearRight.getState());
 
     // Update the heading by integrating the angular velocity by the timestep
     // (note: smaller timesteps will give more accurate results)

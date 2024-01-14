@@ -5,15 +5,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
 
 /**
- * Simulates a mechanism and determines the current draw pulled by the mechanism over time.
- * All mechanism simulations should be run by the same {@link SimulationContext} in order to
- * accurately determine overall behavior like voltage drop on the battery caused by the current
- * loads of all the powered mechanisms.
+ * Simulates a mechanism and determines the current draw pulled by the mechanism over time. All
+ * mechanism simulations should be run by the same {@link SimulationContext} in order to accurately
+ * determine overall behavior like voltage drop on the battery caused by the current loads of all
+ * the powered mechanisms.
  */
 public interface MechanismSim {
-  /**
-   * Gets the current draw of the mechanism, in amps.
-   */
+  /** Gets the current draw of the mechanism, in amps. */
   double getCurrentDraw();
 
   /**
@@ -41,10 +39,10 @@ public interface MechanismSim {
 
   /**
    * Gets the current voltage of the battery, in volts. In simulation, this will be calculated by
-   * the {@link SimulationContext#update(double)} method. This is a convenience method for
-   * {@link RobotController#getBatteryVoltage()}. Note that this will lag behind the simulation by
-   * one timestep - for example, a mechanism drawing 100 amps of current will see the full 12 volts
-   * of voltage available on the first call to {@link #update(double)}, but see the voltage drop to
+   * the {@link SimulationContext#update(double)} method. This is a convenience method for {@link
+   * RobotController#getBatteryVoltage()}. Note that this will lag behind the simulation by one
+   * timestep - for example, a mechanism drawing 100 amps of current will see the full 12 volts of
+   * voltage available on the first call to {@link #update(double)}, but see the voltage drop to
    * 10.5 volts on the second call due to the induced voltage drop (assuming a battery with 15 mOhm
    * internal resistance).
    */

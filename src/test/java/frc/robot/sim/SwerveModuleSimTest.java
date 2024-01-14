@@ -8,9 +8,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-/**
- * Note: all tests run with a constant 12V battery input.
- */
+/** Note: all tests run with a constant 12V battery input. */
 class SwerveModuleSimTest {
   @BeforeAll
   static void wpilibSetup() {
@@ -29,7 +27,8 @@ class SwerveModuleSimTest {
     var sim = new MAXSwerveModuleSim();
     sim.setDriveVoltage(12);
     sim.update(0.02);
-    assertTrue(sim.getWheelVelocity().magnitude() > 0, sim.getWheelVelocity() + " should be positive");
+    assertTrue(
+        sim.getWheelVelocity().magnitude() > 0, sim.getWheelVelocity() + " should be positive");
   }
 
   @Test
@@ -37,7 +36,8 @@ class SwerveModuleSimTest {
     var sim = new MAXSwerveModuleSim();
     sim.setDriveVoltage(-12);
     sim.update(0.02);
-    assertTrue(sim.getWheelVelocity().magnitude() < 0, sim.getWheelVelocity() + " should be negative");
+    assertTrue(
+        sim.getWheelVelocity().magnitude() < 0, sim.getWheelVelocity() + " should be negative");
   }
 
   @Test
@@ -45,7 +45,8 @@ class SwerveModuleSimTest {
     var sim = new MAXSwerveModuleSim();
     sim.setTurnVoltage(12);
     sim.update(0.02);
-    assertTrue(sim.getTurnVelocity().magnitude() > 0, sim.getTurnVelocity() + " should be positive");
+    assertTrue(
+        sim.getTurnVelocity().magnitude() > 0, sim.getTurnVelocity() + " should be positive");
   }
 
   @Test
@@ -53,6 +54,7 @@ class SwerveModuleSimTest {
     var sim = new MAXSwerveModuleSim();
     sim.setTurnVoltage(-12);
     sim.update(0.02);
-    assertTrue(sim.getTurnVelocity().magnitude() < 0, sim.getTurnVelocity() + " should be positive");
+    assertTrue(
+        sim.getTurnVelocity().magnitude() < 0, sim.getTurnVelocity() + " should be positive");
   }
 }

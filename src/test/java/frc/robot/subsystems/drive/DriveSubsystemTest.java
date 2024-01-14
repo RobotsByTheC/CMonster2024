@@ -1,14 +1,12 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import frc.robot.sim.SimulationContext;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +48,11 @@ class DriveSubsystemTest {
   void headingIncreasesWithPositiveRotation() {
     // simulate 400ms of time
     for (int i = 0; i < 20; i++) {
-      drivetrain.drive(MetersPerSecond.zero(), MetersPerSecond.zero(), RotationsPerSecond.of(1), DriveSubsystem.ReferenceFrame.ROBOT);
+      drivetrain.drive(
+          MetersPerSecond.zero(),
+          MetersPerSecond.zero(),
+          RotationsPerSecond.of(1),
+          DriveSubsystem.ReferenceFrame.ROBOT);
       tick();
     }
     var heading = drivetrain.getHeading();
@@ -65,7 +67,11 @@ class DriveSubsystemTest {
   void headingDecreasesWithNegativeRotation() {
     // simulate 400ms of time
     for (int i = 0; i < 20; i++) {
-      drivetrain.drive(MetersPerSecond.zero(), MetersPerSecond.zero(), RotationsPerSecond.of(-1), DriveSubsystem.ReferenceFrame.ROBOT);
+      drivetrain.drive(
+          MetersPerSecond.zero(),
+          MetersPerSecond.zero(),
+          RotationsPerSecond.of(-1),
+          DriveSubsystem.ReferenceFrame.ROBOT);
       tick();
     }
     var heading = drivetrain.getHeading();
