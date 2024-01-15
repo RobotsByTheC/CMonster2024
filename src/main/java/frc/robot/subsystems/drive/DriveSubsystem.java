@@ -61,13 +61,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             io.getModulePositions(),
             new Pose2d(Feet.zero(), Feet.zero(), new Rotation2d(Degrees.zero())),
             // Use default standard deviations of ±4" and ±6° for odometry-derived position data
-            // (i.e. 86% of results will be within 4" and 6° of the true value, and 95% will be
-            // within
-            // ±8" and ±12°)
+            // (i.e. 86% of results will be within 4" and 6° of the true value, and 95% will
+            // be within ±8" and ±12°)
             VecBuilder.fill(
                 Inches.of(4).in(Meters), Inches.of(4).in(Meters), Degrees.of(6).in(Radians)),
-            // Use default standard deviations of ±35" and ±52° for vision-system derived position
-            // data
+            // Use default standard deviations of ±35" and ±52° for vision-derived position data
             VecBuilder.fill(
                 Inches.of(35).in(Meters), Inches.of(35).in(Meters), Degrees.of(52).in(Radians)));
 
@@ -77,9 +75,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     SmartDashboard.putData("FR", io.frontRight());
     SmartDashboard.putData("RL", io.rearLeft());
     SmartDashboard.putData("RR", io.rearRight());
-
-    SmartDashboard.putNumber("Linear P", 1);
-    SmartDashboard.putNumber("Angular P", 1);
   }
 
   private Pose2d lastPose = new Pose2d();

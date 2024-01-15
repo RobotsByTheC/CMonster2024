@@ -4,12 +4,19 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.sim.SimulationContext;
+import frc.robot.subsystems.drive.DriveSubsystem;
+import frc.robot.subsystems.drive.MAXSwerveIO;
+import frc.robot.subsystems.drive.SimSwerveIO;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,7 +27,20 @@ import frc.robot.sim.SimulationContext;
 public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
-  private RobotContainer robotContainer;
+  // The robot's subsystems
+  private DriveSubsystem robotDrive;
+
+  // Driver and operator controls
+  private XboxController driverController;
+
+  enum AutoType {
+    NOTHING,
+    SPRINT,
+    GREED,
+  }
+
+  /** Used to select a preplanned autonomous routine on a dashboard. */
+  private final SendableChooser<AutoType> autoChooser = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -28,9 +48,55 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    robotContainer = new RobotContainer();
+    // Initialize our subsystems. If our program is running in simulation mode (either from the
+    // simulate command in vscode or from running in unit tests), then we use the simulation IO
+    // layers. Otherwise, the IO layers that interact with real hardware are used.
+    if (Robot.isSimulation()) {
+      robotDrive = new DriveSubsystem(new SimSwerveIO());
+    } else {
+      // Running on real hardware
+      robotDrive = new DriveSubsystem(new MAXSwerveIO());
+    }
+
+    driverController = new XboxController(Constants.OIConstants.driverControllerPort);
+
+    // Configure the button bindings
+    configureButtonBindings();
+
+    // Configure default commands
+    robotDrive.setDefaultCommand(
+        robotDrive.driveWithJoysticks(
+            driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+
+    // Set up autonomous chooser
+    autoChooser.setDefaultOption("Sit Still And Be Useless", AutoType.NOTHING);
+    autoChooser.addOption("Sprint", AutoType.SPRINT);
+    autoChooser.addOption("Greedy Notes", AutoType.GREED);
+    SmartDashboard.putData("Autonomous Mode", autoChooser);
+  }
+
+  /**
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link edu.wpi.first.wpilibj.GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then calling passing it to a
+   * {@link JoystickButton}.
+   */
+  private void configureButtonBindings() {
+    new JoystickButton(driverController, PS4Controller.Button.kR1.value)
+        .whileTrue(robotDrive.setXCommand());
+  }
+
+  /**
+   * Gets the command to run in autonomous based on user selection in a dashboard.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand() {
+    return switch (autoChooser.getSelected()) {
+      case SPRINT -> robotDrive.followChoreoTrajectory("sprint");
+      case GREED -> robotDrive.followChoreoTrajectory("greedy_notes");
+      case NOTHING -> robotDrive.run(() -> {});
+    };
   }
 
   /**
@@ -65,10 +131,10 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {}
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
+  /** This autonomous runs the autonomous command selected by the {@link #autoChooser}. */
   @Override
   public void autonomousInit() {
-    autonomousCommand = robotContainer.getAutonomousCommand();
+    autonomousCommand = getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (autonomousCommand != null) {
