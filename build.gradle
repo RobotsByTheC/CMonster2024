@@ -1,10 +1,12 @@
+import com.github.spotbugs.snom.Effort
+
 plugins {
     id "java"
     id "edu.wpi.first.GradleRIO" version "2024.1.1"
 
     // linting, style, and static analysis tools
-    id 'com.diffplug.spotless' version '6.22.0' apply false
-    id 'com.github.spotbugs' version '5.2.3' apply false
+    id 'com.diffplug.spotless' version '6.25.0' apply false
+    id 'com.github.spotbugs' version '6.0.7' apply false
     id 'net.ltgt.errorprone' version '3.1.0' apply false
 }
 
@@ -107,6 +109,10 @@ wpi.java.configureTestTasks(test)
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {
     options.compilerArgs.add '-XDstringConcat=inline'
+
+    // Set text encoding to UTF-8 to support characters like "°",
+    // which are not part of the ASCII character set
+    options.encoding = 'UTF-8'
 }
 
 // Linting, style, and static analysis tools
@@ -189,7 +195,7 @@ if (!project.hasProperty('skipJavaFormat')) {
 
     spotbugs {
         ignoreFailures = false
-        effort = 'max'
+        effort = Effort.MAX
         excludeFilter = file("${project.rootDir}/styleguide/spotbugs-exclude.xml")
     }
 }
