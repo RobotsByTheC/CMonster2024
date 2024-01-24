@@ -51,6 +51,9 @@
     },
     "transitory": {
       "Shuffleboard": {
+        ".recording": {
+          "open": true
+        },
         "open": true
       },
       "SmartDashboard": {
@@ -102,7 +105,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": -12,
+          "height": 2,
           "legend": false,
           "name": "Module Angles",
           "series": [
@@ -159,7 +162,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": -12,
+          "height": 2,
           "legend": false,
           "lockPrevX": true,
           "name": "Wheel Speeds",
@@ -231,7 +234,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 321,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -281,7 +284,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 321,
+          "height": 0,
           "name": "Target Speed vs Actual",
           "series": [
             {
@@ -328,7 +331,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 321,
+          "height": 0,
           "series": [
             {
               "color": [
@@ -389,7 +392,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 321,
+          "height": 0,
           "series": [
             {
               "color": [
