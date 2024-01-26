@@ -244,7 +244,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
    * Creates a command that uses joystick inputs to drive the robot. The speeds are field-relative.
    *
    * @param x a supplier for the relative speed that the robot should move on the field's X-axis, as
-   *     a number from -1 (towards the alliance all) to +1 (towards the opposing alliance wall).
+   *     a number from -1 (towards the alliance wall) to +1 (towards the opposing alliance wall).
    * @param y a supplier for the relative speed that the robot should move on the field's Y-axis, as
    *     a number from -1 (towards the right side of the field) to +1 (towards the left side of the
    *     field).
@@ -258,10 +258,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     var omegaSpeed = MutableMeasure.zero(RadiansPerSecond);
 
     return run(() -> {
-          xSpeed.mut_setMagnitude(x.getAsDouble() * DriveConstants.maxSpeed.in(MetersPerSecond));
-          ySpeed.mut_setMagnitude(y.getAsDouble() * DriveConstants.maxSpeed.in(MetersPerSecond));
+          xSpeed.mut_setMagnitude(-x.getAsDouble() * DriveConstants.maxSpeed.in(MetersPerSecond));
+          ySpeed.mut_setMagnitude(-y.getAsDouble() * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              omega.getAsDouble() * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
+              -omega.getAsDouble() * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
         })

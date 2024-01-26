@@ -17,6 +17,7 @@ import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
+import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +33,8 @@ public class Robot extends TimedRobot {
 
   // Driver and operator controls
   private XboxController driverController;
+  private Joystick l_stick;
+  private Joystick r_stick;
 
   enum AutoType {
     NOTHING,
@@ -59,6 +62,11 @@ public class Robot extends TimedRobot {
     }
 
     driverController = new XboxController(Constants.OIConstants.driverControllerPort);
+    l_stick = new Joystick(Constants.OIConstants.leftJoystickPort);
+    r_stick = new Joystick(Constants.OIConstants.rightJoystickPort);
+
+
+    
 
     // Configure the button bindings
     configureButtonBindings();
@@ -66,7 +74,7 @@ public class Robot extends TimedRobot {
     // Configure default commands
     robotDrive.setDefaultCommand(
         robotDrive.driveWithJoysticks(
-            driverController::getLeftY, driverController::getLeftX, driverController::getRightX));
+            r_stick::getY, r_stick::getX, l_stick::getX));
 
     // Set up autonomous chooser
     autoChooser.setDefaultOption("Sit Still And Be Useless", AutoType.NOTHING);
