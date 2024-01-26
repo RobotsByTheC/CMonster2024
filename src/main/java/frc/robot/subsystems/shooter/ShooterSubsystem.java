@@ -14,6 +14,10 @@ public class ShooterSubsystem extends SubsystemBase {
   private final CANSparkMax lSpark =
       new CANSparkMax(Constants.ShooterConstants.leftShooterCanId, MotorType.kBrushless);
 
+  public ShooterSubsystem() {
+    lSpark.setInverted(true);
+  }
+
   public void spin() {
     // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
     rSpark.setVoltage(4);
