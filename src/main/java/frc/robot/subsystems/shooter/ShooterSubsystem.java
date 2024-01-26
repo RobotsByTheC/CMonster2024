@@ -32,7 +32,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void actuate() {}
 
-  public Command spinCommand() {
+  public Command shootCommand() {
     return run(this::spin).finallyDo((interrupted) -> stopSpin());
   }
 

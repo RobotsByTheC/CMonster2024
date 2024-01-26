@@ -18,6 +18,7 @@ import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,6 +31,7 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private DriveSubsystem robotDrive;
+  private ShooterSubsystem robotShoot;
 
   // Driver and operator controls
   private XboxController driverController;
@@ -88,6 +90,8 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
         .whileTrue(robotDrive.setXCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
+        .whileTrue(robotShoot.shootCommand());
   }
 
   /**
