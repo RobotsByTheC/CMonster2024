@@ -156,17 +156,15 @@ public final class Constants {
     public static final Measure<Velocity<Angle>> freeSpeedRpm = RPM.of(5676);
   }
 
-  //shooter constants
+  // shooter constants
   public static final class ShooterConstants {
     public static final int rightShooterCanId = 15;
     public static final int leftShooterCanId = 16;
-
   }
 
-  //intake constants
+  // intake constants
   public static final class IntakeConstants {
     public static final int intakeCanId = 14;
     public static final Measure<Velocity<Angle>> intakeRotationalSpeed = RPM.of(1.0);
   }
-  
 }

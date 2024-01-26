@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -17,7 +18,6 @@ import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
-import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -65,16 +65,12 @@ public class Robot extends TimedRobot {
     l_stick = new Joystick(Constants.OIConstants.leftJoystickPort);
     r_stick = new Joystick(Constants.OIConstants.rightJoystickPort);
 
-
-    
-
     // Configure the button bindings
     configureButtonBindings();
 
     // Configure default commands
     robotDrive.setDefaultCommand(
-        robotDrive.driveWithJoysticks(
-            r_stick::getY, r_stick::getX, l_stick::getX));
+        robotDrive.driveWithJoysticks(r_stick::getY, r_stick::getX, l_stick::getX));
 
     // Set up autonomous chooser
     autoChooser.setDefaultOption("Sit Still And Be Useless", AutoType.NOTHING);
