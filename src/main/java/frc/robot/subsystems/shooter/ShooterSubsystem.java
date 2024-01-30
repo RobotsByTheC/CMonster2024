@@ -52,7 +52,8 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command stopSpinCommand() {
     return runOnce(this::stopSpin);
   }
-@Override
+
+  @Override
   public void periodic() {
     SmartDashboard.putNumber("Left velocity", lSpark.getEncoder().getVelocity());
   }
