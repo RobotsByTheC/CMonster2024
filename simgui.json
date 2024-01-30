@@ -50,6 +50,15 @@
       "open": false
     },
     "transitory": {
+      "FMSInfo": {
+        "open": true
+      },
+      "LiveWindow": {
+        ".status": {
+          "open": true
+        },
+        "open": true
+      },
       "Shuffleboard": {
         ".recording": {
           "open": true
@@ -331,7 +340,7 @@
             0.0,
             0.8500000238418579
           ],
-          "height": 45,
+          "height": 201,
           "series": [
             {
               "color": [

@@ -39,6 +39,9 @@ public class Robot extends TimedRobot {
   enum AutoType {
     NOTHING,
     SPRINT,
+    AMP,
+    CENTER,
+    STAGE,
     GREED,
   }
 
@@ -51,6 +54,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+
     // Initialize our subsystems. If our program is running in simulation mode (either from the
     // simulate command in vscode or from running in unit tests), then we use the simulation IO
     // layers. Otherwise, the IO layers that interact with real hardware are used.
@@ -76,7 +80,11 @@ public class Robot extends TimedRobot {
     autoChooser.setDefaultOption("Sit Still And Be Useless", AutoType.NOTHING);
     autoChooser.addOption("Sprint", AutoType.SPRINT);
     autoChooser.addOption("Greedy Notes", AutoType.GREED);
+    autoChooser.addOption("Amp", AutoType.AMP);
+    autoChooser.addOption("Stage", AutoType.STAGE);
+    autoChooser.addOption("Center", AutoType.CENTER);
     SmartDashboard.putData("Autonomous Mode", autoChooser);
+
   }
 
   /**
@@ -99,6 +107,9 @@ public class Robot extends TimedRobot {
     return switch (autoChooser.getSelected()) {
       case SPRINT -> robotDrive.followChoreoTrajectory("sprint");
       case GREED -> robotDrive.followChoreoTrajectory("greedy_notes");
+      case AMP -> robotDrive.followChoreoTrajectory("amp pickup");
+      case CENTER -> robotDrive.followChoreoTrajectory("center pickup");
+      case STAGE -> robotDrive.followChoreoTrajectory("stage pickup");
       case NOTHING -> robotDrive.run(() -> {});
     };
   }
