@@ -18,6 +18,8 @@ import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
+import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -30,11 +32,13 @@ public class Robot extends TimedRobot {
 
   // The robot's subsystems
   private DriveSubsystem robotDrive;
+  private ShooterSubsystem robotShoot;
+  private IntakeSubsystem robotIntake; // NOPMD
 
   // Driver and operator controls
   private XboxController driverController;
-  private Joystick l_stick;
-  private Joystick r_stick;
+  private Joystick lStick; // NOPMD
+  private Joystick rStick; // NOPMD
 
   enum AutoType {
     NOTHING,
@@ -60,21 +64,25 @@ public class Robot extends TimedRobot {
     // layers. Otherwise, the IO layers that interact with real hardware are used.
     if (Robot.isSimulation()) {
       robotDrive = new DriveSubsystem(new SimSwerveIO());
+      robotShoot = new ShooterSubsystem();
+      robotIntake = new IntakeSubsystem();
     } else {
       // Running on real hardware
       robotDrive = new DriveSubsystem(new MAXSwerveIO());
+      robotShoot = new ShooterSubsystem();
+      robotIntake = new IntakeSubsystem();
     }
 
     driverController = new XboxController(Constants.OIConstants.driverControllerPort);
-    l_stick = new Joystick(Constants.OIConstants.leftJoystickPort);
-    r_stick = new Joystick(Constants.OIConstants.rightJoystickPort);
+    lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
+    rStick = new Joystick(Constants.OIConstants.rightJoystickPort);
 
     // Configure the button bindings
     configureButtonBindings();
 
     // Configure default commands
     robotDrive.setDefaultCommand(
-        robotDrive.driveWithJoysticks(r_stick::getY, r_stick::getX, l_stick::getX));
+        robotDrive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist));
 
     // Set up autonomous chooser
     autoChooser.setDefaultOption("Sit Still And Be Useless", AutoType.NOTHING);
@@ -96,6 +104,8 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
         .whileTrue(robotDrive.setXCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
+        .whileTrue(robotShoot.shootCommand());
   }
 
   /**

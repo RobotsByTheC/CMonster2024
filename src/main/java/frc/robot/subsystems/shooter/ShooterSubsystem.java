@@ -14,15 +14,23 @@ public class ShooterSubsystem extends SubsystemBase {
   private final CANSparkMax lSpark =
       new CANSparkMax(Constants.ShooterConstants.leftShooterCanId, MotorType.kBrushless);
 
+  public ShooterSubsystem() {
+    rSpark.restoreFactoryDefaults();
+    lSpark.restoreFactoryDefaults();
+    lSpark.setInverted(true);
+  }
+
   public void spin() {
     // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
-    rSpark.setVoltage(4);
-    lSpark.setVoltage(4);
+    rSpark.setVoltage(2.5);
+    lSpark.setVoltage(2.5);
+    System.out.println("spinning motors");
   }
 
   public void stopSpin() {
     rSpark.set(0);
     lSpark.set(0);
+    System.out.println("Stopping spin");
   }
 
   public void hold() {
@@ -32,8 +40,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void actuate() {}
 
-  public Command spinCommand() {
-    return run(this::spin).finallyDo((interrupted) -> stopSpin());
+  public Command shootCommand() {
+    System.out.println("shoot commanded");
+    return run(this::spin).finallyDo(interrupted -> stopSpin());
   }
 
   public Command holdCommand() {
@@ -42,5 +51,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command stopSpinCommand() {
     return runOnce(this::stopSpin);
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putNumber("Left velocity", lSpark.getEncoder().getVelocity());
   }
 }

@@ -158,8 +158,8 @@ public final class Constants {
 
   // shooter constants
   public static final class ShooterConstants {
-    public static final int rightShooterCanId = 15;
-    public static final int leftShooterCanId = 16;
+    public static final int rightShooterCanId = 13;
+    public static final int leftShooterCanId = 6;
   }
 
   // intake constants
