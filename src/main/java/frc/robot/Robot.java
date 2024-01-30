@@ -33,12 +33,12 @@ public class Robot extends TimedRobot {
   // The robot's subsystems
   private DriveSubsystem robotDrive;
   private ShooterSubsystem robotShoot;
-  private IntakeSubsystem robotIntake;
+  private IntakeSubsystem robotIntake; // NOPMD
 
   // Driver and operator controls
   private XboxController driverController;
-  private Joystick lStick;
-  private Joystick rStick;
+  private Joystick lStick; // NOPMD
+  private Joystick rStick; // NOPMD
 
   enum AutoType {
     NOTHING,
