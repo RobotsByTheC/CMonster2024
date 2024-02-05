@@ -328,7 +328,8 @@ public class Robot extends TimedRobot {
 
   private SequentialCommandGroup followPathAndShoot(String p) {
     return drive
-        .followChoreoTrajectory(p).andThen(drive.setXCommand())
+        .followChoreoTrajectory(p)
+        .andThen(drive.setXCommand())
         .deadlineWith(intake.intakeCommand())
         .andThen(shooter.shootCommand());
   }
