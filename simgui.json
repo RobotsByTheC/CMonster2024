@@ -20,19 +20,22 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Autonomous Mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/PID": "PIDController"
+      "/SmartDashboard/PID": "PIDController",
+      "/SmartDashboard/note chooser 1": "String Chooser",
+      "/SmartDashboard/note chooser 2": "String Chooser",
+      "/SmartDashboard/note chooser 3": "String Chooser",
+      "/SmartDashboard/starting position": "String Chooser"
     },
     "windows": {
       "/SmartDashboard/Field": {
         "Robot": {
           "style": "Box/Image"
         },
-        "bottom": 544,
-        "builtin": "2024 Crescendo",
-        "height": 8.013679504394531,
-        "left": 46,
-        "right": 1088,
-        "top": 36,
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
         "units": "feet",
         "width": 16.541748046875,
         "window": {

@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
@@ -31,9 +32,9 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   // The robot's subsystems
-  private DriveSubsystem robotDrive;
-  private ShooterSubsystem robotShoot;
-  private IntakeSubsystem robotIntake; // NOPMD
+  private DriveSubsystem drive;
+  private ShooterSubsystem shooter;
+  private IntakeSubsystem intake;
 
   // Driver and operator controls
   private XboxController driverController;
@@ -47,10 +48,38 @@ public class Robot extends TimedRobot {
     CENTER,
     STAGE,
     GREED,
+    AMP3p1,
+    AMP3p2,
+    AMP3p3,
+    CENTER3p1,
+    CENTER3p2,
+    CENTER3p3,
+    STAGE3p1,
+    STAGE3p2,
+    STAGE3p3
+  }
+
+  enum Positions {
+    STAGE,
+    CENTER,
+    AMP
+  }
+
+  enum Notes {
+    STAGE,
+    CENTER,
+    AMP,
+    NOTHING,
+    DRIVE
   }
 
   /** Used to select a preplanned autonomous routine on a dashboard. */
   private final SendableChooser<AutoType> autoChooser = new SendableChooser<>();
+
+  private final SendableChooser<Positions> startingPositionChooser = new SendableChooser<>();
+  private final SendableChooser<Notes> noteChooser1 = new SendableChooser<>();
+  private final SendableChooser<Notes> noteChooser2 = new SendableChooser<>();
+  private final SendableChooser<Notes> noteChooser3 = new SendableChooser<>();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -63,14 +92,14 @@ public class Robot extends TimedRobot {
     // simulate command in vscode or from running in unit tests), then we use the simulation IO
     // layers. Otherwise, the IO layers that interact with real hardware are used.
     if (Robot.isSimulation()) {
-      robotDrive = new DriveSubsystem(new SimSwerveIO());
-      robotShoot = new ShooterSubsystem();
-      robotIntake = new IntakeSubsystem();
+      drive = new DriveSubsystem(new SimSwerveIO());
+      shooter = new ShooterSubsystem();
+      intake = new IntakeSubsystem();
     } else {
       // Running on real hardware
-      robotDrive = new DriveSubsystem(new MAXSwerveIO());
-      robotShoot = new ShooterSubsystem();
-      robotIntake = new IntakeSubsystem();
+      drive = new DriveSubsystem(new MAXSwerveIO());
+      shooter = new ShooterSubsystem();
+      intake = new IntakeSubsystem();
     }
 
     driverController = new XboxController(Constants.OIConstants.driverControllerPort);
@@ -81,18 +110,35 @@ public class Robot extends TimedRobot {
     configureButtonBindings();
 
     // Configure default commands
-    robotDrive.setDefaultCommand(
-        robotDrive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist));
+    drive.setDefaultCommand(drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist));
 
     // Set up autonomous chooser
-    autoChooser.setDefaultOption("Sit Still And Be Useless", AutoType.NOTHING);
-    autoChooser.addOption("Sprint", AutoType.SPRINT);
-    autoChooser.addOption("Greedy Notes", AutoType.GREED);
-    autoChooser.addOption("Amp", AutoType.AMP);
-    autoChooser.addOption("Stage", AutoType.STAGE);
-    autoChooser.addOption("Center", AutoType.CENTER);
-    SmartDashboard.putData("Autonomous Mode", autoChooser);
 
+    startingPositionChooser.setDefaultOption("Stage", Positions.STAGE);
+    startingPositionChooser.addOption("Center", Positions.CENTER);
+    startingPositionChooser.addOption("Amp", Positions.AMP);
+    SmartDashboard.putData("starting position", startingPositionChooser);
+
+    noteChooser1.setDefaultOption("be useless", Notes.NOTHING);
+    noteChooser1.addOption("Center Note", Notes.CENTER);
+    noteChooser1.addOption("Stage", Notes.STAGE);
+    noteChooser1.addOption("Amp Note", Notes.AMP);
+    noteChooser1.addOption("Drive", Notes.DRIVE);
+    SmartDashboard.putData("note chooser 1", noteChooser1);
+
+    noteChooser2.setDefaultOption("be useless", Notes.NOTHING);
+    noteChooser2.addOption("Center Note", Notes.CENTER);
+    noteChooser2.addOption("Stage", Notes.STAGE);
+    noteChooser2.addOption("Amp Note", Notes.AMP);
+    noteChooser2.addOption("Drive", Notes.DRIVE);
+    SmartDashboard.putData("note chooser 2", noteChooser2);
+
+    noteChooser3.setDefaultOption("be useless", Notes.NOTHING);
+    noteChooser3.addOption("Center Note", Notes.CENTER);
+    noteChooser3.addOption("Stage", Notes.STAGE);
+    noteChooser3.addOption("Amp Note", Notes.AMP);
+    noteChooser3.addOption("Drive", Notes.DRIVE);
+    SmartDashboard.putData("note chooser 3", noteChooser3);
   }
 
   /**
@@ -103,9 +149,9 @@ public class Robot extends TimedRobot {
    */
   private void configureButtonBindings() {
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
-        .whileTrue(robotDrive.setXCommand());
+        .whileTrue(drive.setXCommand());
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
-        .whileTrue(robotShoot.shootCommand());
+        .whileTrue(shooter.shootCommand());
   }
 
   /**
@@ -114,14 +160,177 @@ public class Robot extends TimedRobot {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return switch (autoChooser.getSelected()) {
-      case SPRINT -> robotDrive.followChoreoTrajectory("sprint");
-      case GREED -> robotDrive.followChoreoTrajectory("greedy_notes");
-      case AMP -> robotDrive.followChoreoTrajectory("amp pickup");
-      case CENTER -> robotDrive.followChoreoTrajectory("center pickup");
-      case STAGE -> robotDrive.followChoreoTrajectory("stage pickup");
-      case NOTHING -> robotDrive.run(() -> {});
+    return switch (startingPositionChooser.getSelected()) {
+      case AMP -> {
+        Command auto = shooter.shootCommand();
+        boolean done = false;
+        switch (noteChooser1.getSelected()) {
+          case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
+          case CENTER -> auto = auto.andThen(followPathAndShoot("amp 3 p2"));
+          case STAGE -> auto = auto.andThen(followPathAndShoot("amp 3 p3"));
+          case DRIVE -> {
+            auto = auto.andThen(drive.followChoreoTrajectory("amp drive"));
+            done = true;
+          }
+          case NOTHING -> {
+            done = true;
+          }
+          default -> {
+            done = true;
+          }
+        }
+        if (!done) {
+          switch (noteChooser2.getSelected()) {
+            case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
+            case CENTER -> auto = auto.andThen(followPathAndShoot("amp 3 p2"));
+            case STAGE -> auto = auto.andThen(followPathAndShoot("amp 3 p3"));
+            case DRIVE -> {
+              auto = auto.andThen(drive.followChoreoTrajectory("amp drive"));
+              done = true;
+            }
+            case NOTHING -> {
+              done = true;
+            }
+            default -> {
+              done = true;
+            }
+          }
+        }
+        if (!done) {
+          switch (noteChooser3.getSelected()) {
+            case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
+            case CENTER -> auto = auto.andThen(followPathAndShoot("amp 3 p2"));
+            case STAGE -> auto = auto.andThen(followPathAndShoot("amp 3 p3"));
+            case DRIVE -> {
+              auto = auto.andThen(drive.followChoreoTrajectory("amp drive"));
+              done = true;
+            }
+            case NOTHING -> {
+              done = true;
+            }
+            default -> {
+              done = true;
+            }
+          }
+        }
+        yield auto;
+      }
+      case CENTER -> {
+        Command auto = shooter.shootCommand();
+        boolean done = false;
+        switch (noteChooser1.getSelected()) {
+          case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
+          case STAGE -> auto = auto.andThen(followPathAndShoot("center 3 p2"));
+          case AMP -> auto = auto.andThen(followPathAndShoot("center 3 p3"));
+          case DRIVE -> {
+            done = true;
+          }
+          case NOTHING -> {
+            done = true;
+          }
+          default -> {
+            done = true;
+          }
+        }
+        if (!done) {
+          switch (noteChooser2.getSelected()) {
+            case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
+            case STAGE -> auto = auto.andThen(followPathAndShoot("center 3 p2"));
+            case AMP -> auto = auto.andThen(followPathAndShoot("center 3 p3"));
+            case DRIVE -> {
+              done = true;
+            }
+            case NOTHING -> {
+              done = true;
+            }
+            default -> {
+              done = true;
+            }
+          }
+        }
+        if (!done) {
+
+          switch (noteChooser3.getSelected()) {
+            case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
+            case STAGE -> auto = auto.andThen(followPathAndShoot("center 3 p2"));
+            case AMP -> auto = auto.andThen(followPathAndShoot("center 3 p3"));
+            case DRIVE -> {
+              done = true;
+            }
+            case NOTHING -> {
+              done = true;
+            }
+            default -> {
+              done = true;
+            }
+          }
+        }
+        yield auto;
+      }
+      case STAGE -> {
+        Command auto = shooter.shootCommand();
+        boolean done = false;
+        switch (noteChooser1.getSelected()) {
+          case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
+          case CENTER -> auto = auto.andThen(followPathAndShoot("stage 3 p2"));
+          case STAGE -> auto = auto.andThen(followPathAndShoot("stage 3 p3"));
+          case DRIVE -> {
+            auto = auto.andThen(drive.followChoreoTrajectory("stage drive"));
+            done = true;
+          }
+          case NOTHING -> {
+            done = true;
+          }
+          default -> {
+            done = true;
+          }
+        }
+        if (!done) {
+
+          switch (noteChooser2.getSelected()) {
+            case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
+            case CENTER -> auto = auto.andThen(followPathAndShoot("stage 3 p2"));
+            case STAGE -> auto = auto.andThen(followPathAndShoot("stage 3 p3"));
+            case DRIVE -> {
+              auto = auto.andThen(drive.followChoreoTrajectory("stage drive"));
+              done = true;
+            }
+            case NOTHING -> {
+              done = true;
+            }
+            default -> {
+              done = true;
+            }
+          }
+        }
+        if (!done) {
+
+          switch (noteChooser3.getSelected()) {
+            case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
+            case CENTER -> auto = auto.andThen(followPathAndShoot("stage 3 p2"));
+            case STAGE -> auto = auto.andThen(followPathAndShoot("stage 3 p3"));
+            case DRIVE -> {
+              auto = auto.andThen(drive.followChoreoTrajectory("stage drive"));
+              done = true;
+            }
+            case NOTHING -> {
+              done = true;
+            }
+            default -> {
+              done = true;
+            }
+          }
+        }
+        yield auto;
+      }
     };
+  }
+
+  private SequentialCommandGroup followPathAndShoot(String p) {
+    return drive
+        .followChoreoTrajectory(p).andThen(drive.setXCommand())
+        .deadlineWith(intake.intakeCommand())
+        .andThen(shooter.shootCommand());
   }
 
   /**
