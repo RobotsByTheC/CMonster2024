@@ -21,6 +21,7 @@ import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.leds.LEDSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,9 +33,10 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   // The robot's subsystems
-  private DriveSubsystem drive;
-  private ShooterSubsystem shooter;
+  private LEDSubsystem leds;
   private IntakeSubsystem intake;
+  private ShooterSubsystem shooter;
+  private DriveSubsystem drive;
 
   // Driver and operator controls
   private XboxController driverController;
@@ -101,6 +103,7 @@ public class Robot extends TimedRobot {
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
     }
+    leds = new LEDSubsystem();
 
     driverController = new XboxController(Constants.OIConstants.driverControllerPort);
     lStick = new Joystick(Constants.OIConstants.leftJoystickPort);

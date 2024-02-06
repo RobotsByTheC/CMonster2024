@@ -167,4 +167,10 @@ public final class Constants {
     public static final int intakeCanId = 14;
     public static final Measure<Velocity<Angle>> intakeRotationalSpeed = RPM.of(1.0);
   }
+
+  public static final class LEDConstants {
+    public static final int ledPortNumber = 1; // temp
+    public static final int ledLength = 30; // temp
+
+  }
 }
