@@ -20,6 +20,7 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 
 /**
@@ -32,32 +33,15 @@ public class Robot extends TimedRobot {
   private Command autonomousCommand;
 
   // The robot's subsystems
-  private DriveSubsystem drive;
-  private ShooterSubsystem shooter;
+  private LEDSubsystem leds;
   private IntakeSubsystem intake;
+  private ShooterSubsystem shooter;
+  private DriveSubsystem drive;
 
   // Driver and operator controls
   private XboxController driverController;
   private Joystick lStick; // NOPMD
   private Joystick rStick; // NOPMD
-
-  enum AutoType {
-    NOTHING,
-    SPRINT,
-    AMP,
-    CENTER,
-    STAGE,
-    GREED,
-    AMP3p1,
-    AMP3p2,
-    AMP3p3,
-    CENTER3p1,
-    CENTER3p2,
-    CENTER3p3,
-    STAGE3p1,
-    STAGE3p2,
-    STAGE3p3
-  }
 
   enum Positions {
     STAGE,
@@ -72,9 +56,6 @@ public class Robot extends TimedRobot {
     NOTHING,
     DRIVE
   }
-
-  /** Used to select a preplanned autonomous routine on a dashboard. */
-  private final SendableChooser<AutoType> autoChooser = new SendableChooser<>();
 
   private final SendableChooser<Positions> startingPositionChooser = new SendableChooser<>();
   private final SendableChooser<Notes> noteChooser1 = new SendableChooser<>();
@@ -101,6 +82,7 @@ public class Robot extends TimedRobot {
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
     }
+    leds = new LEDSubsystem();
 
     driverController = new XboxController(Constants.OIConstants.driverControllerPort);
     lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
@@ -151,7 +133,7 @@ public class Robot extends TimedRobot {
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
         .whileTrue(drive.setXCommand());
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
-        .whileTrue(shooter.shootCommand());
+        .whileTrue(shooter.shootCommand().deadlineWith(leds.rainbowFlagScroll()));
   }
 
   /**
@@ -203,14 +185,9 @@ public class Robot extends TimedRobot {
             case STAGE -> auto = auto.andThen(followPathAndShoot("amp 3 p3"));
             case DRIVE -> {
               auto = auto.andThen(drive.followChoreoTrajectory("amp drive"));
-              done = true;
             }
-            case NOTHING -> {
-              done = true;
-            }
-            default -> {
-              done = true;
-            }
+            case NOTHING -> {}
+            default -> {}
           }
         }
         yield auto;
@@ -254,15 +231,9 @@ public class Robot extends TimedRobot {
             case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
             case STAGE -> auto = auto.andThen(followPathAndShoot("center 3 p2"));
             case AMP -> auto = auto.andThen(followPathAndShoot("center 3 p3"));
-            case DRIVE -> {
-              done = true;
-            }
-            case NOTHING -> {
-              done = true;
-            }
-            default -> {
-              done = true;
-            }
+            case DRIVE -> {}
+            case NOTHING -> {}
+            default -> {}
           }
         }
         yield auto;
@@ -311,14 +282,9 @@ public class Robot extends TimedRobot {
             case STAGE -> auto = auto.andThen(followPathAndShoot("stage 3 p3"));
             case DRIVE -> {
               auto = auto.andThen(drive.followChoreoTrajectory("stage drive"));
-              done = true;
             }
-            case NOTHING -> {
-              done = true;
-            }
-            default -> {
-              done = true;
-            }
+            case NOTHING -> {}
+            default -> {}
           }
         }
         yield auto;
