@@ -68,14 +68,14 @@ public final class Constants {
     public static final Rotation2d rearRightChassisAngularOffset = Rotation2d.fromDegrees(90);
 
     // SPARK MAX CAN IDs
-    public static final int frontLeftDrivingCanId = 7;
-    public static final int rearLeftDrivingCanId = 11;
-    public static final int frontRightDrivingCanId = 3;
-    public static final int rearRightDrivingCanId = 6;
+    public static final int frontLeftDrivingCanId = 10;
+    public static final int rearLeftDrivingCanId = 4;
+    public static final int frontRightDrivingCanId = 14;
+    public static final int rearRightDrivingCanId = 8;
 
-    public static final int frontLeftTurningCanId = 8;
-    public static final int rearLeftTurningCanId = 10;
-    public static final int frontRightTurningCanId = 4;
+    public static final int frontLeftTurningCanId = 12;
+    public static final int rearLeftTurningCanId = 3;
+    public static final int frontRightTurningCanId = 7;
     public static final int rearRightTurningCanId = 5;
 
     public static final boolean gyroReversed = false;
@@ -159,12 +159,12 @@ public final class Constants {
   // shooter constants
   public static final class ShooterConstants {
     public static final int rightShooterCanId = 13;
-    public static final int leftShooterCanId = 6;
+    public static final int leftShooterCanId = 69;
   }
 
   // intake constants
   public static final class IntakeConstants {
-    public static final int intakeCanId = 14;
+    public static final int intakeCanId = 140;
     public static final Measure<Velocity<Angle>> intakeRotationalSpeed = RPM.of(1.0);
   }
 
