@@ -3,10 +3,13 @@ package frc.robot.subsystems.drive;
 import static frc.robot.Constants.DriveConstants.frontLeftChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.frontLeftDrivingCanId;
 import static frc.robot.Constants.DriveConstants.frontLeftTurningCanId;
+import static frc.robot.Constants.DriveConstants.frontRightChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.frontRightDrivingCanId;
 import static frc.robot.Constants.DriveConstants.frontRightTurningCanId;
+import static frc.robot.Constants.DriveConstants.rearLeftChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearLeftDrivingCanId;
 import static frc.robot.Constants.DriveConstants.rearLeftTurningCanId;
+import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearRightDrivingCanId;
 import static frc.robot.Constants.DriveConstants.rearRightTurningCanId;
 
@@ -34,19 +37,19 @@ public class MAXSwerveIO implements SwerveIO {
           new MAXSwerveModuleIO(
               new CANSparkMax(frontRightDrivingCanId, MotorType.kBrushless),
               new CANSparkMax(frontRightTurningCanId, MotorType.kBrushless)),
-          frontLeftChassisAngularOffset);
+          frontRightChassisAngularOffset);
   private final SwerveModule rearLeft =
       new SwerveModule(
           new MAXSwerveModuleIO(
               new CANSparkMax(rearLeftDrivingCanId, MotorType.kBrushless),
               new CANSparkMax(rearLeftTurningCanId, MotorType.kBrushless)),
-          frontLeftChassisAngularOffset);
+          rearLeftChassisAngularOffset);
   private final SwerveModule rearRight =
       new SwerveModule(
           new MAXSwerveModuleIO(
               new CANSparkMax(rearRightDrivingCanId, MotorType.kBrushless),
               new CANSparkMax(rearRightTurningCanId, MotorType.kBrushless)),
-          frontLeftChassisAngularOffset);
+          rearRightChassisAngularOffset);
 
   // The gyro sensor
   private final ADIS16470_IMU gyro = new ADIS16470_IMU();
