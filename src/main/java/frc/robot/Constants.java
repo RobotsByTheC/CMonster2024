@@ -160,13 +160,13 @@ public final class Constants {
   // shooter constants
   public static final class ShooterConstants {
     public static final int rightShooterCanId = 13;
-    public static final int leftShooterCanId = 69;
+    public static final int leftShooterCanId = 16;
   }
 
   // intake constants
   public static final class IntakeConstants {
-    public static final int intakeCanId = 140;
-    public static final Measure<Velocity<Angle>> intakeRotationalSpeed = RPM.of(1.0);
+    public static final int intakeCanId = 34;
+    public static final double intakeRotationalSpeed = -1.0;
   }
 
   public static final class LEDConstants {

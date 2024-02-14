@@ -14,8 +14,8 @@ public class IntakeSubsystem extends SubsystemBase {
       new CANSparkMax(Constants.IntakeConstants.intakeCanId, MotorType.kBrushless);
 
   public void spin() {
-    spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
-    // spark.setRPM(Constants.IntakeConstants.intakeRotationalSpeed);
+    // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
+    spark.set(Constants.IntakeConstants.intakeRotationalSpeed);
   }
 
   public void stopSpin() {
