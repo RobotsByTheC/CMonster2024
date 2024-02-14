@@ -4,9 +4,11 @@
 
 package frc.robot;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -72,6 +74,9 @@ public class Robot extends TimedRobot {
     // Initialize our subsystems. If our program is running in simulation mode (either from the
     // simulate command in vscode or from running in unit tests), then we use the simulation IO
     // layers. Otherwise, the IO layers that interact with real hardware are used.
+
+    AHRS ahrs = new AHRS(SerialPort.Port.kMXP);
+
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
       shooter = new ShooterSubsystem();

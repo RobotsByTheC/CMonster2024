@@ -13,11 +13,11 @@ import static frc.robot.Constants.DriveConstants.rearRightChassisAngularOffset;
 import static frc.robot.Constants.DriveConstants.rearRightDrivingCanId;
 import static frc.robot.Constants.DriveConstants.rearRightTurningCanId;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.ADIS16470_IMU;
-import edu.wpi.first.wpilibj.ADIS16470_IMU.IMUAxis;
+import edu.wpi.first.wpilibj.SPI;
 import frc.robot.subsystems.drive.swerve.MAXSwerveModuleIO;
 import frc.robot.subsystems.drive.swerve.SwerveModule;
 
@@ -52,7 +52,7 @@ public class MAXSwerveIO implements SwerveIO {
           rearRightChassisAngularOffset);
 
   // The gyro sensor
-  private final ADIS16470_IMU gyro = new ADIS16470_IMU();
+  AHRS gyro = new AHRS(SPI.Port.kMXP);
 
   @Override
   public SwerveModule frontLeft() {
@@ -76,12 +76,12 @@ public class MAXSwerveIO implements SwerveIO {
 
   @Override
   public Rotation2d getHeading() {
-    return Rotation2d.fromDegrees(gyro.getAngle(IMUAxis.kYaw));
+    return gyro.getRotation2d();
   }
 
   @Override
   public void resetHeading(Rotation2d heading) {
-    gyro.setGyroAngle(IMUAxis.kYaw, heading.getDegrees());
+    gyro.setAngleAdjustment(heading.getDegrees());
   }
 
   @Override
