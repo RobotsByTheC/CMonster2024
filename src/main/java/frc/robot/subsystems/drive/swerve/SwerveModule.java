@@ -77,6 +77,16 @@ public class SwerveModule implements AutoCloseable, Sendable {
     io.setDesiredState(optimizedState);
   }
 
+  public void setDesiredStateWithoutOptimization(SwerveModuleState desiredState) {
+    // Apply chassis angular offset to the desired state.
+    var correctedState =
+        new SwerveModuleState(
+            desiredState.speedMetersPerSecond, desiredState.angle.plus(angularOffset));
+    this.targetState = correctedState;
+
+    io.setDesiredState(correctedState);
+  }
+
   /** Zeroes all the swerve module encoders. */
   public void resetEncoders() {
     io.resetEncoders();

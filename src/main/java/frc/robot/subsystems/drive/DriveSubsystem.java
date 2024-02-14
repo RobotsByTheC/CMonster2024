@@ -313,4 +313,28 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   public Command sysIdDynamic(SysIdRoutine.Direction direction) { // can bind to controller buttons
     return routine.dynamic(direction);
   }
+
+  public Command pointForward() {
+    return run(this::setForward).until(
+            () -> {
+              return Arrays.stream(getModuleStates())
+                  .allMatch(
+                      state -> {
+                        double v = Math.abs(state.speedMetersPerSecond);
+                        double angle = state.angle.getSin();
+                        return .01 >= v && 1/90.0 >= angle && angle >= -1/90.0;
+                      });
+            })
+        .withName("Set 0");
+  }
+
+  public void setForward() {
+    io.setDesiredStateWithoutOptimization(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0))
+        });
+  }
 }

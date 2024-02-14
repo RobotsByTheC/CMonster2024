@@ -113,4 +113,12 @@ public interface SwerveIO extends AutoCloseable {
     rearLeft().close();
     rearRight().close();
   }
+
+  default void setDesiredstateWithoutOptimization(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.maxSpeed);
+    frontLeft().setDesiredStateWithoutOptimization(desiredStates[0]);
+    frontRight().setDesiredStateWithoutOptimization(desiredStates[1]);
+    rearLeft().setDesiredStateWithoutOptimization(desiredStates[2]);
+    rearRight().setDesiredStateWithoutOptimization(desiredStates[3]);
+  }
 }
