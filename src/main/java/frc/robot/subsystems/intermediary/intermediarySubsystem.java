@@ -16,6 +16,10 @@ public class IntermediarySubsystem extends SubsystemBase {
     spark.set(Constants.IntermediaryConstants.intermediaryRotationalSpeed);
   }
 
+  public void spinBack() {
+    spark.set(Constants.IntermediaryConstants.intermediaryBackRotationalSpeed);
+  }
+
   public void stopSpin() {
     spark.set(0);
   }
@@ -23,8 +27,6 @@ public class IntermediarySubsystem extends SubsystemBase {
   public void hold() {
     spark.setVoltage(SmartDashboard.getNumber("Hold voltage", 0));
   }
-
-  public void actuate() {}
 
   public Command intermediaryCommand() {
     return run(this::spin).finallyDo(interrupted -> stopSpin());
@@ -36,5 +38,18 @@ public class IntermediarySubsystem extends SubsystemBase {
 
   public Command stopSpinCommand() {
     return runOnce(this::stopSpin);
+  }
+
+  public Command handOutCommand() {
+    return run(this::spin)
+        .withTimeout(3)
+        .finallyDo(
+            interrupted ->
+                stopSpin()); // basically just shove it outwards and take 3 seconds doing it so
+    // shooter has time to rev up
+  }
+
+  public Command handInCommand() {
+    return run(this::spinBack); // .until(lowerBeamBroken) or something like that
   }
 }
