@@ -22,8 +22,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public void spin() {
     // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
-    rSpark.setVoltage(2.5);
-    lSpark.setVoltage(2.5);
+    rSpark.setVoltage(4);
+    lSpark.setVoltage(4);
     System.out.println("spinning motors");
   }
 
