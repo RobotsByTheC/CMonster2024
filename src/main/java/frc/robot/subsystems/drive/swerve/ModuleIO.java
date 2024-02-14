@@ -2,6 +2,8 @@ package frc.robot.subsystems.drive.swerve;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 
 /**
  * Common input-output interface for a single swerve module. This is responsible for assigning
@@ -43,4 +45,6 @@ public interface ModuleIO extends AutoCloseable {
   void close();
 
   double getTurnVoltage();
+
+  void setDrivingMotorVoltage(Measure<Voltage> v);
 }

@@ -283,7 +283,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           new SysIdRoutine.Config(),
           new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
 
-  public void voltageDrive(Measure<Voltage> v) {}
+  public void voltageDrive(Measure<Voltage> v) {
+    io.frontLeft().setVoltageForDrivingMotor(v);
+    io.frontRight().setVoltageForDrivingMotor(v);
+    io.rearLeft().setVoltageForDrivingMotor(v);
+    io.rearRight().setVoltageForDrivingMotor(v);
+  }
 
   public void logMotors(SysIdRoutineLog s) {
     s.motor("frontLeft")

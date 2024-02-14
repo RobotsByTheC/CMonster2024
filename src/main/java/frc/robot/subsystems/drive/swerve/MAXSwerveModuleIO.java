@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
@@ -14,6 +15,8 @@ import com.revrobotics.SparkAbsoluteEncoder.Type;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 
@@ -169,5 +172,10 @@ public class MAXSwerveModuleIO implements ModuleIO {
 
   public double getTurnVoltage() {
     return turningSparkMax.getAppliedOutput();
+  }
+
+  @Override
+  public void setDrivingMotorVoltage(Measure<Voltage> v) {
+    drivingSparkMax.setVoltage(v.in(Volts));
   }
 }

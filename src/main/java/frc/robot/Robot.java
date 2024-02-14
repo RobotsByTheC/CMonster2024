@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.RobotController;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.sim.SimulationContext;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
@@ -145,6 +147,14 @@ public class Robot extends TimedRobot {
                 .intakeCommand()
                 .alongWith(shooter.shootCommand())
                 .deadlineWith(leds.blinkPurple()));
+    new JoystickButton(driverController, PS4Controller.Button.kCross.value)
+        .and(DriverStation::isTest)
+        .whileTrue(
+            drive
+                .sysIdDynamic(Direction.kForward)
+                .andThen(drive.sysIdDynamic(Direction.kReverse))
+                .andThen(drive.sysIdQuasistatic(Direction.kForward))
+                .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
   }
 
   /**

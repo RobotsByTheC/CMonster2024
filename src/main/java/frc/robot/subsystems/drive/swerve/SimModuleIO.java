@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive.swerve;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 import static frc.robot.Constants.ModuleConstants.wheelCircumference;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import frc.robot.sim.MAXSwerveModuleSim;
 import frc.robot.sim.Simulation;
 import frc.robot.sim.SimulationContext;
@@ -120,5 +122,10 @@ public class SimModuleIO implements ModuleIO {
 
   public double getTurnVoltage() {
     return turnVolts;
+  }
+
+  @Override
+  public void setDrivingMotorVoltage(Measure<Voltage> v) {
+    sim.setDriveVoltage(v.in(Volts));
   }
 }
