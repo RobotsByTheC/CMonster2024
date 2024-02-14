@@ -33,6 +33,8 @@ public class SimModuleIO implements ModuleIO {
 
   private SwerveModuleState desiredState = new SwerveModuleState();
 
+  private double turnVolts;
+
   public SimModuleIO(MAXSwerveModuleSim sim) {
     this.sim = sim;
 
@@ -49,7 +51,7 @@ public class SimModuleIO implements ModuleIO {
     double driveVolts =
         drivePID.calculate(getWheelVelocity())
             + driveFeedForward.calculate(desiredState.speedMetersPerSecond);
-    double turnVolts = turnPID.calculate(getModuleRotation().getRadians());
+    turnVolts = turnPID.calculate(getModuleRotation().getRadians());
 
     lastVoltage = driveVolts;
 
@@ -114,5 +116,9 @@ public class SimModuleIO implements ModuleIO {
    */
   private double wheelSpeedFromAngular(Measure<Velocity<Angle>> angularWheelVelocity) {
     return angularWheelVelocity.in(RotationsPerSecond) * wheelCircumference.in(Meters);
+  }
+
+  public double getTurnVoltage() {
+    return turnVolts;
   }
 }

@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Minute;
 import static edu.wpi.first.units.Units.Percent;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Radians;
@@ -76,7 +77,7 @@ public final class Constants {
     public static final int frontLeftTurningCanId = 12;
     public static final int rearLeftTurningCanId = 3;
     public static final int frontRightTurningCanId = 7;
-    public static final int rearRightTurningCanId = 5;
+    public static final int rearRightTurningCanId = 25;
 
     public static final boolean gyroReversed = false;
   }
@@ -85,7 +86,7 @@ public final class Constants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
     // This changes the drive speed of the module (a pinion gear with more teeth will result in a
     // robot that drives faster).
-    public static final int drivingMotorPinionTeeth = 13;
+    public static final int drivingMotorPinionTeeth = 14;
 
     // Invert the turning encoder, since the output shaft rotates in the opposite direction of
     // the steering motor in the MAXSwerve Module.
@@ -108,7 +109,7 @@ public final class Constants {
     public static final Measure<Distance> drivingEncoderPositionFactor =
         wheelDiameter.times(Math.PI / drivingMotorReduction);
     public static final Measure<Velocity<Distance>> drivingEncoderVelocityFactor =
-        wheelDiameter.times(Math.PI / drivingMotorReduction).per(Second);
+        wheelDiameter.times(Math.PI / drivingMotorReduction).per(Minute);
 
     public static final Measure<Angle> turningEncoderPositionFactor = Rotations.of(1.0);
     public static final Measure<Velocity<Angle>> turningEncoderVelocityFactor =

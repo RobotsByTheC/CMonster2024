@@ -166,4 +166,8 @@ public class MAXSwerveModuleIO implements ModuleIO {
     drivingSparkMax.close();
     turningSparkMax.close();
   }
+
+  public double getTurnVoltage() {
+    return turningSparkMax.getAppliedOutput();
+  }
 }

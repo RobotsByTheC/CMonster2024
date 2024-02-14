@@ -97,6 +97,7 @@ public class SwerveModule implements AutoCloseable, Sendable {
     builder.addDoubleProperty("Angle (deg)", () -> io.getModuleRotation().getDegrees(), null);
     builder.addDoubleProperty("Target Speed (mps)", () -> targetState.speedMetersPerSecond, null);
     builder.addDoubleProperty("Target Angle (deg)", () -> targetState.angle.getDegrees(), null);
+    builder.addDoubleProperty("Turn Voltage", () -> io.getTurnVoltage(), null);
 
     if (io instanceof SimModuleIO s) {
       builder.addDoubleProperty("Applied Drive Voltage", s::getDriveVoltage, null);

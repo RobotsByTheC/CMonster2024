@@ -41,4 +41,6 @@ public interface ModuleIO extends AutoCloseable {
   /** Closes the IO object and frees or destroys any held resources. */
   @Override
   void close();
+
+  double getTurnVoltage();
 }
