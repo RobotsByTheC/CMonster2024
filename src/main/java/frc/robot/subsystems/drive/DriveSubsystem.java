@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.choreo.lib.Choreo;
 import edu.wpi.first.math.VecBuilder;
@@ -26,12 +27,15 @@ import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import java.util.Arrays;
@@ -272,5 +276,69 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   @Override
   public void close() {
     io.close();
+  }
+
+  // Creates a SysIdRoutine
+  SysIdRoutine routine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
+
+Measure<Voltage> appliedSysidVoltage = Volts.zero();
+
+  public void voltageDrive(Measure<Voltage> v) {
+    io.frontLeft().setVoltageForDrivingMotor(v);
+    io.frontRight().setVoltageForDrivingMotor(v);
+    io.rearLeft().setVoltageForDrivingMotor(v);
+    io.rearRight().setVoltageForDrivingMotor(v);
+    appliedSysidVoltage = v;
+  }
+
+  public void logMotors(SysIdRoutineLog s) {
+    s.motor("frontLeft")
+        .linearPosition(Meters.of(io.frontLeft().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+    s.motor("rearLeft")
+        .linearPosition(Meters.of(io.rearLeft().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+    s.motor("frontRight")
+        .linearPosition(Meters.of(io.frontRight().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+    s.motor("rearRight")
+        .linearPosition(Meters.of(io.rearRight().getPosition().distanceMeters))
+        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+  }
+
+  public Command sysIdQuasistatic(
+      SysIdRoutine.Direction direction) { // can bind to controller buttons
+    return routine.quasistatic(direction);
+  }
+
+  public Command sysIdDynamic(SysIdRoutine.Direction direction) { // can bind to controller buttons
+    return routine.dynamic(direction);
+  }
+
+  public Command pointForward() {
+    return run(this::setForward).until(
+            () -> {
+              return Arrays.stream(getModuleStates())
+                  .allMatch(
+                      state -> {
+                        double v = Math.abs(state.speedMetersPerSecond);
+                        double angle = state.angle.getSin();
+                        return .01 >= v && 1/90.0 >= angle && angle >= -1/90.0;
+                      });
+            })
+        .withName("Set 0");
+  }
+
+  public void setForward() {
+    io.setDesiredStateWithoutOptimization(
+        new SwerveModuleState[] {
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0)),
+          new SwerveModuleState(0, Rotation2d.fromDegrees(0))
+        });
   }
 }

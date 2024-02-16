@@ -7,6 +7,8 @@ package frc.robot.subsystems.drive.swerve;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.Voltage;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
@@ -75,6 +77,16 @@ public class SwerveModule implements AutoCloseable, Sendable {
     io.setDesiredState(optimizedState);
   }
 
+  public void setDesiredStateWithoutOptimization(SwerveModuleState desiredState) {
+    // Apply chassis angular offset to the desired state.
+    var correctedState =
+        new SwerveModuleState(
+            desiredState.speedMetersPerSecond, desiredState.angle.plus(angularOffset));
+    this.targetState = correctedState;
+
+    io.setDesiredState(correctedState);
+  }
+
   /** Zeroes all the swerve module encoders. */
   public void resetEncoders() {
     io.resetEncoders();
@@ -102,5 +114,9 @@ public class SwerveModule implements AutoCloseable, Sendable {
     if (io instanceof SimModuleIO s) {
       builder.addDoubleProperty("Applied Drive Voltage", s::getDriveVoltage, null);
     }
+  }
+
+  public void setVoltageForDrivingMotor(Measure<Voltage> v) {
+    io.setDrivingMotorVoltage(v);
   }
 }
