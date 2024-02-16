@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import com.choreo.lib.Choreo;
 import edu.wpi.first.math.VecBuilder;
@@ -283,26 +284,29 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           new SysIdRoutine.Config(),
           new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
 
+Measure<Voltage> appliedSysidVoltage = Volts.zero();
+
   public void voltageDrive(Measure<Voltage> v) {
     io.frontLeft().setVoltageForDrivingMotor(v);
     io.frontRight().setVoltageForDrivingMotor(v);
     io.rearLeft().setVoltageForDrivingMotor(v);
     io.rearRight().setVoltageForDrivingMotor(v);
+    appliedSysidVoltage = v;
   }
 
   public void logMotors(SysIdRoutineLog s) {
     s.motor("frontLeft")
         .linearPosition(Meters.of(io.frontLeft().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond));
+        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
     s.motor("rearLeft")
         .linearPosition(Meters.of(io.rearLeft().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond));
+        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
     s.motor("frontRight")
         .linearPosition(Meters.of(io.frontRight().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond));
+        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
     s.motor("rearRight")
         .linearPosition(Meters.of(io.rearRight().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond));
+        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
   }
 
   public Command sysIdQuasistatic(
