@@ -69,14 +69,14 @@ public final class Constants {
     public static final Rotation2d rearRightChassisAngularOffset = Rotation2d.fromDegrees(90);
 
     // SPARK MAX CAN IDs
-    public static final int frontLeftDrivingCanId = 10;
+    public static final int frontLeftDrivingCanId = 7;
     public static final int rearLeftDrivingCanId = 4;
-    public static final int frontRightDrivingCanId = 14;
+    public static final int frontRightDrivingCanId = 12;
     public static final int rearRightDrivingCanId = 8;
 
-    public static final int frontLeftTurningCanId = 12;
+    public static final int frontLeftTurningCanId = 14;
     public static final int rearLeftTurningCanId = 3;
-    public static final int frontRightTurningCanId = 7;
+    public static final int frontRightTurningCanId = 10;
     public static final int rearRightTurningCanId = 25;
 
     public static final boolean gyroReversed = false;

@@ -14,6 +14,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.choreo.lib.Choreo;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -29,6 +30,7 @@ import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -216,7 +218,11 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
             new PIDController(Constants.AutoConstants.pYController, 0, 0),
             new PIDController(Constants.AutoConstants.pThetaController, 0, 0),
             this::drive,
-            () -> false,
+            () -> {
+              if (DriverStation.getAlliance().isEmpty()) return false;
+              else if (DriverStation.getAlliance().get() == Alliance.Blue) return false;
+              else return true;
+            },
             this);
     followTrajectory.setName(trajectoryName);
 
@@ -284,7 +290,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           new SysIdRoutine.Config(),
           new SysIdRoutine.Mechanism(this::voltageDrive, this::logMotors, this));
 
-Measure<Voltage> appliedSysidVoltage = Volts.zero();
+  Measure<Voltage> appliedSysidVoltage = Volts.zero();
 
   public void voltageDrive(Measure<Voltage> v) {
     io.frontLeft().setVoltageForDrivingMotor(v);
@@ -297,16 +303,20 @@ Measure<Voltage> appliedSysidVoltage = Volts.zero();
   public void logMotors(SysIdRoutineLog s) {
     s.motor("frontLeft")
         .linearPosition(Meters.of(io.frontLeft().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+        .linearVelocity(MetersPerSecond.of(io.frontLeft().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
     s.motor("rearLeft")
         .linearPosition(Meters.of(io.rearLeft().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+        .linearVelocity(MetersPerSecond.of(io.rearLeft().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
     s.motor("frontRight")
         .linearPosition(Meters.of(io.frontRight().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+        .linearVelocity(MetersPerSecond.of(io.frontRight().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
     s.motor("rearRight")
         .linearPosition(Meters.of(io.rearRight().getPosition().distanceMeters))
-        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond)).voltage(appliedSysidVoltage);
+        .linearVelocity(MetersPerSecond.of(io.rearRight().getState().speedMetersPerSecond))
+        .voltage(appliedSysidVoltage);
   }
 
   public Command sysIdQuasistatic(
@@ -319,14 +329,15 @@ Measure<Voltage> appliedSysidVoltage = Volts.zero();
   }
 
   public Command pointForward() {
-    return run(this::setForward).until(
+    return run(this::setForward)
+        .until(
             () -> {
               return Arrays.stream(getModuleStates())
                   .allMatch(
                       state -> {
                         double v = Math.abs(state.speedMetersPerSecond);
                         double angle = state.angle.getSin();
-                        return .01 >= v && 1/90.0 >= angle && angle >= -1/90.0;
+                        return .01 >= v && 1 / 90.0 >= angle && angle >= -1 / 90.0;
                       });
             })
         .withName("Set 0");
