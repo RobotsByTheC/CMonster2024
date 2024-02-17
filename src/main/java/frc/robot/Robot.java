@@ -152,8 +152,8 @@ public class Robot extends TimedRobot {
         .whileTrue(
             drive
                 .sysIdDynamic(Direction.kForward)
-                .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kForward))
+                .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
   }
 
