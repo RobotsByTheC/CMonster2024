@@ -18,6 +18,10 @@ public class IntakeSubsystem extends SubsystemBase {
     spark.set(Constants.IntakeConstants.intakeRotationalSpeed);
   }
 
+  public void spinReverse() {
+    spark.set(Constants.IntakeConstants.reverseIntakeRotationalSpeed);
+  }
+
   public void stopSpin() {
     spark.set(0);
   }
@@ -38,5 +42,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
   public Command stopSpinCommand() {
     return runOnce(this::stopSpin);
+  }
+
+  public Command spinReverseCommand() {
+    return run(this::spinReverse).finallyDo(interrupted -> stopSpin());
   }
 }

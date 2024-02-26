@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class IntermediarySubsystem extends SubsystemBase {
+public class intermediarySubsystem extends SubsystemBase {
 
   private final CANSparkMax spark =
       new CANSparkMax(Constants.IntermediaryConstants.intermediaryCanID, MotorType.kBrushless);

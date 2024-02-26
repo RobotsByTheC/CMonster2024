@@ -24,8 +24,10 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.intermediary.intermediarySubsystem;
 import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.intermediary.intermediarySubsystem;;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -41,6 +43,7 @@ public class Robot extends TimedRobot {
   private IntakeSubsystem intake;
   private ShooterSubsystem shooter;
   private DriveSubsystem drive;
+  private intermediarySubsystem intermediary;
 
   // Driver and operator controls
   private XboxController driverController;
@@ -83,11 +86,13 @@ public class Robot extends TimedRobot {
       drive = new DriveSubsystem(new SimSwerveIO());
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
+      intermediary = new intermediarySubsystem();
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
+      intermediary = new intermediarySubsystem();
     }
     leds = new LEDSubsystem();
 
@@ -141,6 +146,7 @@ public class Robot extends TimedRobot {
         .whileTrue(drive.setXCommand());
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
         .whileTrue(shooter.shootCommand().deadlineWith(leds.rainbowFlagScroll()));
+    new JoystickButton(driverController, PS4Controller.Button.kCircle.value).whileTrue(intermediary.intermediaryCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
         .whileTrue(
             intake
@@ -155,6 +161,7 @@ public class Robot extends TimedRobot {
                 .andThen(drive.sysIdQuasistatic(Direction.kForward))
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
+    new JoystickButton(driverController, PS4Controller.Button.kL1.value).whileTrue(intake.spinReverseCommand());
   }
 
   /**
@@ -318,7 +325,7 @@ public class Robot extends TimedRobot {
         .followChoreoTrajectory(p)
         .andThen(drive.setXCommand())
         .deadlineWith(intake.intakeCommand())
-        .andThen(shooter.shootCommand());
+        .andThen(shooter.shootCommand().deadlineWith(intermediary.intermediaryCommand()));
   }
 
   /**

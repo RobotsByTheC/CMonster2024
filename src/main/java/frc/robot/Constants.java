@@ -167,6 +167,7 @@ public final class Constants {
   public static final class IntakeConstants {
     public static final int intakeCanId = 34;
     public static final double intakeRotationalSpeed = -1.0;
+    public static final double reverseIntakeRotationalSpeed = 1.0;
   }
 
   public static final class LEDConstants {
@@ -176,7 +177,7 @@ public final class Constants {
 
   public static final class IntermediaryConstants {
     public static final double intermediaryRotationalSpeed = 1.0; // temp
-    public static final int intermediaryCanID = 99; // temp
+    public static final int intermediaryCanID = 49; // temp
     public static final double intermediaryBackRotationalSpeed = 0.5; // temp of a temp
   }
 }
