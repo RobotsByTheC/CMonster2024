@@ -144,14 +144,13 @@ public class Robot extends TimedRobot {
   private void configureButtonBindings() {
     new JoystickButton(driverController, PS4Controller.Button.kR2.value)
         .whileTrue(drive.setXCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
-        .whileTrue(shooter.shootCommand().deadlineWith(leds.rainbowFlagScroll()));
-    new JoystickButton(driverController, PS4Controller.Button.kCircle.value).whileTrue(intermediary.intermediaryCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kL1.value)
+        .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll())).onFalse(shooter.manualStopCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value).whileTrue(intermediary.intermediaryCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
         .whileTrue(
             intake
                 .intakeCommand()
-                .alongWith(shooter.shootCommand())
                 .deadlineWith(leds.blinkPurple()));
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
         .and(DriverStation::isTest)
@@ -172,7 +171,7 @@ public class Robot extends TimedRobot {
   public Command getAutonomousCommand() {
     return switch (startingPositionChooser.getSelected()) {
       case AMP -> {
-        Command auto = shooter.shootCommand();
+        Command auto = shooter.autoShootCommand();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
@@ -221,7 +220,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case CENTER -> {
-        Command auto = shooter.shootCommand();
+        Command auto = shooter.autoShootCommand();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
@@ -267,7 +266,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case STAGE -> {
-        Command auto = shooter.shootCommand();
+        Command auto = shooter.autoShootCommand();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
@@ -325,7 +324,7 @@ public class Robot extends TimedRobot {
         .followChoreoTrajectory(p)
         .andThen(drive.setXCommand())
         .deadlineWith(intake.intakeCommand())
-        .andThen(shooter.shootCommand().deadlineWith(intermediary.intermediaryCommand()));
+        .andThen(shooter.autoShootCommand().deadlineWith(intermediary.intermediaryCommand()));
   }
 
   /**
