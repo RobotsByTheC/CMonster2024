@@ -16,6 +16,10 @@ public class intermediarySubsystem extends SubsystemBase {
     spark.set(Constants.IntermediaryConstants.intermediaryRotationalSpeed);
   }
 
+  public void reverseSpin() {
+    spark.set(Constants.IntermediaryConstants.intermediaryBackRotationalSpeed);
+  }
+
   public void spinBack() {
     spark.set(Constants.IntermediaryConstants.intermediaryBackRotationalSpeed);
   }
@@ -30,6 +34,10 @@ public class intermediarySubsystem extends SubsystemBase {
 
   public Command intermediaryCommand() {
     return run(this::spin).finallyDo(interrupted -> stopSpin());
+  }
+  
+  public Command intermediaryReverseCommand() {
+    return run(this::reverseSpin).withTimeout(.5).finallyDo(interrupted -> stopSpin());
   }
 
   public Command holdCommand() {

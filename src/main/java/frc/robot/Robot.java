@@ -146,7 +146,7 @@ public class Robot extends TimedRobot {
         .whileTrue(drive.setXCommand());
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
         .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll()));
-    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value).whileTrue(intermediary.intermediaryCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value).whileTrue(intermediary.intermediaryCommand()).whileFalse(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
         .whileTrue(
             intake
@@ -160,7 +160,7 @@ public class Robot extends TimedRobot {
                 .andThen(drive.sysIdQuasistatic(Direction.kForward))
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
-    new JoystickButton(driverController, PS4Controller.Button.kL1.value).whileTrue(intake.spinReverseCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kCircle.value).whileTrue(intake.spinReverseCommand());
   }
 
   /**
