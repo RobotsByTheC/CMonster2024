@@ -142,15 +142,16 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driverController, PS4Controller.Button.kR2.value)
+    new JoystickButton(driverController, PS4Controller.Button.kCross.value)
+    .and(DriverStation::isTeleop)
         .whileTrue(drive.setXCommand());
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
         .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll()));
-    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value).whileTrue(intermediary.intermediaryCommand()).whileFalse(intermediary.intermediaryReverseCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value).whileTrue(intermediary.intermediaryCommand()).whileTrue(intake.intakeCommand()).whileFalse(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
         .whileTrue(
-            intake
-                .intakeCommand()
+            shooter
+                .ampCommand()
                 .deadlineWith(leds.blinkPurple()));
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
         .and(DriverStation::isTest)
@@ -161,7 +162,9 @@ public class Robot extends TimedRobot {
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
     new JoystickButton(driverController, PS4Controller.Button.kCircle.value).whileTrue(intake.spinReverseCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kR1.value).whileTrue(shooter.ampCommand());
   }
+
 
   /**
    * Gets the command to run in autonomous based on user selection in a dashboard.

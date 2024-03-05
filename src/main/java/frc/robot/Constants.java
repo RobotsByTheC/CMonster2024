@@ -142,7 +142,7 @@ public final class Constants {
 
   public static final class OIConstants {
     public static final int driverControllerPort = 1;
-    public static final double driveDeadband = 0.05;
+    public static final double driveDeadband = 1;
     public static final int leftJoystickPort = 2;
     public static final int rightJoystickPort = 3;
   }

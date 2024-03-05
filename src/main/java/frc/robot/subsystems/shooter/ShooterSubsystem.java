@@ -23,8 +23,13 @@ public class ShooterSubsystem extends SubsystemBase {
   public void spin() {
     // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
     rSpark.setVoltage(12);
-    lSpark.setVoltage(12);
+    lSpark.setVoltage(11);
     System.out.println("spinning motors");
+  }
+
+  public void ampShot() {
+    rSpark.setVoltage(3);
+    lSpark.setVoltage(2);
   }
 
   public void stopSpin() {
@@ -57,6 +62,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
   public Command stopSpinCommand() {
     return runOnce(this::stopSpin);
+  }
+
+  public Command ampCommand() {
+    return run(this::ampShot).finallyDo(interrupted -> stopSpin());
   }
 
   @Override
