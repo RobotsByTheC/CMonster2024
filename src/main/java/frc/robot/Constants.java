@@ -64,7 +64,7 @@ public final class Constants {
     // to the chassis. There should be offsets at 0, 90, 180, and 270 degrees for a rectangular
     // chassis.
     public static final Rotation2d frontLeftChassisAngularOffset = Rotation2d.fromDegrees(-90);
-    public static final Rotation2d frontRightChassisAngularOffset = Rotation2d.fromDegrees(0);
+    public static final Rotation2d frontRightChassisAngularOffset = Rotation2d.fromDegrees(180); 
     public static final Rotation2d rearLeftChassisAngularOffset = Rotation2d.fromDegrees(180);
     public static final Rotation2d rearRightChassisAngularOffset = Rotation2d.fromDegrees(90);
 
