@@ -28,8 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void ampShot() {
-    rSpark.setVoltage(3);
-    lSpark.setVoltage(2);
+    rSpark.setVoltage(2.2);
+    lSpark.setVoltage(2.2);
   }
 
   public void stopSpin() {
