@@ -162,9 +162,8 @@ public class Robot extends TimedRobot {
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
     new JoystickButton(driverController, PS4Controller.Button.kCircle.value).whileTrue(intake.spinReverseCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kR1.value).whileTrue(shooter.ampCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kR3.value).whileTrue(shooter.ampCommand());
   }
-
 
   /**
    * Gets the command to run in autonomous based on user selection in a dashboard.
