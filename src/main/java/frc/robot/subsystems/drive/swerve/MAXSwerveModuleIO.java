@@ -174,7 +174,7 @@ public class MAXSwerveModuleIO implements ModuleIO {
     return turningSparkMax.getAppliedOutput();
   }
   private SwerveModuleState targetState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
-  
+
   @Override
   public void setDrivingMotorVoltage(Measure<Voltage> v) {
     drivingSparkMax.setVoltage(v.in(Volts));

@@ -172,7 +172,7 @@ public class Robot extends TimedRobot {
   public Command getAutonomousCommand() {
     return switch (startingPositionChooser.getSelected()) {
       case AMP -> {
-        Command auto = shooter.autoShootCommand();
+        Command auto = shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
@@ -221,7 +221,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case CENTER -> {
-        Command auto = shooter.autoShootCommand();
+        Command auto = shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
@@ -267,7 +267,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case STAGE -> {
-        Command auto = shooter.autoShootCommand();
+        Command auto = shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
@@ -325,7 +325,7 @@ public class Robot extends TimedRobot {
         .followChoreoTrajectory(p)
         .andThen(drive.setXCommand())
         .deadlineWith(intake.intakeCommand())
-        .andThen(shooter.autoShootCommand().deadlineWith(intermediary.intermediaryCommand()));
+        .andThen(shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2()).deadlineWith(intermediary.intermediaryCommand()));
   }
 
   /**

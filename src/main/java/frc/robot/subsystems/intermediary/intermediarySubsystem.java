@@ -35,6 +35,11 @@ public class intermediarySubsystem extends SubsystemBase {
   public Command intermediaryCommand() {
     return run(this::spin).finallyDo(interrupted -> stopSpin());
   }
+
+  public Command autoIntermediaryCommand() {
+    return run(this::spin).withTimeout(3);
+  }
+  
   
   public Command intermediaryReverseCommand() {
     return run(this::reverseSpin).withTimeout(.5).finallyDo(interrupted -> stopSpin());
