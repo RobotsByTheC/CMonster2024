@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command autoShootCommand1() {
     System.out.println("shoot commanded");
     // return run(this::spin).finallyDo(interrupted -> stopSpin());
-    return run(this::spin).withTimeout(2).finallyDo(interrupted -> stopSpin());
+    return run(this::spin).withTimeout(3).finallyDo(interrupted -> stopSpin());
   }
 
   public Command autoShootCommand2() {
