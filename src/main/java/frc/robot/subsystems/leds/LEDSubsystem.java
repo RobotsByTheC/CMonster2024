@@ -53,6 +53,10 @@ public class LEDSubsystem extends SubsystemBase {
     return runAnimation(Animation.solid(Color.kViolet).blink(Seconds.of(1)));
   }
 
+  public Command blinkYellow() {
+    return runAnimation(Animation.solid(Color.kYellow).blink(Seconds.of(1)));
+  }
+
   private static final Animation rainbowFlag =
       Animation.steps(
           Map.of(
