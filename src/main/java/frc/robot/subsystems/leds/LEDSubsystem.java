@@ -34,7 +34,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command runAnimation(Animation animation) {
-    return run(() -> animation.update(dataView));
+    return run(() -> animation.update(dataView)).ignoringDisable(true);
   }
 
   public Command blinkRed() {
