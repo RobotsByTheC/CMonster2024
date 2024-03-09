@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
@@ -81,6 +83,8 @@ public class Robot extends TimedRobot {
     // layers. Otherwise, the IO layers that interact with real hardware are used.
 
     AHRS ahrs = new AHRS(SerialPort.Port.kMXP);
+
+    CameraServer.startAutomaticCapture();
 
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
