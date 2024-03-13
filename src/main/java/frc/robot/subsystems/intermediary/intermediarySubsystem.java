@@ -25,7 +25,7 @@ public class IntermediarySubsystem extends SubsystemBase {
   }
 
   public void spin() {
-    spark.set(Constants.IntermediaryConstants.intermediaryRotationalSpeed);
+    spark.setVoltage(Constants.IntermediaryConstants.intermediaryRotationalSpeed);
   }
 
   public void reverseSpin() {
