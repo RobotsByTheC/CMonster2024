@@ -5,8 +5,8 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.util.PixelFormat;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
@@ -26,10 +26,9 @@ import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
 import frc.robot.subsystems.intake.IntakeSubsystem;
-import frc.robot.subsystems.intermediary.intermediarySubsystem;
+import frc.robot.subsystems.intermediary.IntermediarySubsystem;
 import frc.robot.subsystems.leds.LEDSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
-import frc.robot.subsystems.intermediary.intermediarySubsystem;;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -45,7 +44,7 @@ public class Robot extends TimedRobot {
   private IntakeSubsystem intake;
   private ShooterSubsystem shooter;
   private DriveSubsystem drive;
-  private intermediarySubsystem intermediary;
+  private IntermediarySubsystem intermediary;
 
   // Driver and operator controls
   private XboxController driverController;
@@ -84,19 +83,21 @@ public class Robot extends TimedRobot {
 
     AHRS ahrs = new AHRS(SerialPort.Port.kMXP);
 
-    CameraServer.startAutomaticCapture();
+    var driverCamera = CameraServer.startAutomaticCapture();
+    driverCamera.setPixelFormat(PixelFormat.kYUYV);
+    driverCamera.setResolution(1280, 720);
 
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
-      intermediary = new intermediarySubsystem();
+      intermediary = new IntermediarySubsystem();
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
-      intermediary = new intermediarySubsystem();
+      intermediary = new IntermediarySubsystem();
     }
     leds = new LEDSubsystem();
 
@@ -147,16 +148,16 @@ public class Robot extends TimedRobot {
    */
   private void configureButtonBindings() {
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
-    .and(DriverStation::isTeleop)
+        .and(DriverStation::isTeleop)
         .whileTrue(drive.setXCommand());
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
         .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll()));
-    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value).whileTrue(intermediary.intermediaryCommand()).whileTrue(intake.intakeCommand()).whileFalse(intermediary.intermediaryReverseCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
+        .whileTrue(intermediary.intermediaryCommand())
+        .whileTrue(intake.intakeCommand())
+        .whileFalse(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
-        .whileTrue(
-            shooter
-                .ampCommand()
-                .deadlineWith(leds.blinkPurple()));
+        .whileTrue(shooter.ampCommand().deadlineWith(leds.blinkPurple()));
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
         .and(DriverStation::isTest)
         .whileTrue(
@@ -165,8 +166,10 @@ public class Robot extends TimedRobot {
                 .andThen(drive.sysIdQuasistatic(Direction.kForward))
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
-    new JoystickButton(driverController, PS4Controller.Button.kCircle.value).whileTrue(intake.spinReverseCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kR3.value).whileTrue(shooter.ampCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kCircle.value)
+        .whileTrue(intake.spinReverseCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kR3.value)
+        .whileTrue(shooter.ampCommand());
   }
 
   /**
@@ -177,7 +180,11 @@ public class Robot extends TimedRobot {
   public Command getAutonomousCommand() {
     return switch (startingPositionChooser.getSelected()) {
       case AMP -> {
-        Command auto = shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2());
+        Command auto =
+            shooter
+                .autoShootCommand1()
+                .andThen(intermediary.intermediaryCommand())
+                .alongWith(shooter.autoShootCommand2());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
@@ -226,7 +233,11 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case CENTER -> {
-        Command auto = shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2());
+        Command auto =
+            shooter
+                .autoShootCommand1()
+                .andThen(intermediary.intermediaryCommand())
+                .alongWith(shooter.autoShootCommand2());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
@@ -272,7 +283,11 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case STAGE -> {
-        Command auto = shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2());
+        Command auto =
+            shooter
+                .autoShootCommand1()
+                .andThen(intermediary.intermediaryCommand())
+                .alongWith(shooter.autoShootCommand2());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
@@ -330,7 +345,12 @@ public class Robot extends TimedRobot {
         .followChoreoTrajectory(p)
         .andThen(drive.setXCommand())
         .deadlineWith(intake.intakeCommand())
-        .andThen(shooter.autoShootCommand1().andThen(intermediary.intermediaryCommand()).alongWith(shooter.autoShootCommand2()).deadlineWith(intermediary.intermediaryCommand()));
+        .andThen(
+            shooter
+                .autoShootCommand1()
+                .andThen(intermediary.intermediaryCommand())
+                .alongWith(shooter.autoShootCommand2())
+                .deadlineWith(intermediary.intermediaryCommand()));
   }
 
   /**

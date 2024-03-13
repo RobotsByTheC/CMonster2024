@@ -173,12 +173,12 @@ public class MAXSwerveModuleIO implements ModuleIO {
   public double getTurnVoltage() {
     return turningSparkMax.getAppliedOutput();
   }
+
   private SwerveModuleState targetState = new SwerveModuleState(0, Rotation2d.fromDegrees(0));
-  
+
   @Override
   public void setDrivingMotorVoltage(Measure<Voltage> v) {
     drivingSparkMax.setVoltage(v.in(Volts));
     turningPIDController.setReference(0, CANSparkMax.ControlType.kPosition);
-    
   }
 }

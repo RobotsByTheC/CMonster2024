@@ -2,25 +2,33 @@ package frc.robot.subsystems.intermediary;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class intermediarySubsystem extends SubsystemBase {
+public class IntermediarySubsystem extends SubsystemBase {
+
+  private final DigitalInput beamBreak = new DigitalInput(1);
 
   private final CANSparkMax spark =
       new CANSparkMax(Constants.IntermediaryConstants.intermediaryCanID, MotorType.kBrushless);
+
+  public boolean noteCheck() {
+    return !beamBreak.get();
+  }
+
+  @Override
+  public void periodic() {
+    SmartDashboard.putBoolean("beamBreak", this.noteCheck());
+  }
 
   public void spin() {
     spark.set(Constants.IntermediaryConstants.intermediaryRotationalSpeed);
   }
 
   public void reverseSpin() {
-    spark.set(Constants.IntermediaryConstants.intermediaryBackRotationalSpeed);
-  }
-
-  public void spinBack() {
     spark.set(Constants.IntermediaryConstants.intermediaryBackRotationalSpeed);
   }
 
@@ -37,10 +45,9 @@ public class intermediarySubsystem extends SubsystemBase {
   }
 
   public Command autoIntermediaryCommand() {
-    return run(this::spin).withTimeout(3);
+    return run(this::spin).until(this::noteCheck);
   }
-  
-  
+
   public Command intermediaryReverseCommand() {
     return run(this::reverseSpin).withTimeout(.5).finallyDo(interrupted -> stopSpin());
   }
@@ -51,18 +58,5 @@ public class intermediarySubsystem extends SubsystemBase {
 
   public Command stopSpinCommand() {
     return runOnce(this::stopSpin);
-  }
-
-  public Command handOutCommand() {
-    return run(this::spin)
-        .withTimeout(3)
-        .finallyDo(
-            interrupted ->
-                stopSpin()); // basically just shove it outwards and take 3 seconds doing it so
-    // shooter has time to rev up
-  }
-
-  public Command handInCommand() {
-    return run(this::spinBack); // .until(lowerBeamBroken) or something like that
   }
 }

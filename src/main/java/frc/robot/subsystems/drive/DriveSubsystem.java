@@ -268,8 +268,12 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     var omegaSpeed = MutableMeasure.zero(RadiansPerSecond);
 
     return run(() -> {
-          xSpeed.mut_setMagnitude(MathUtil.applyDeadband(x.getAsDouble(), 0.01)  * DriveConstants.maxSpeed.in(MetersPerSecond));
-          ySpeed.mut_setMagnitude(MathUtil.applyDeadband(y.getAsDouble(), 0.01)  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          xSpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(x.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
+          ySpeed.mut_setMagnitude(
+              MathUtil.applyDeadband(y.getAsDouble(), 0.01)
+                  * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
               -omega.getAsDouble() * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 

@@ -62,6 +62,12 @@ public class ShooterSubsystem extends SubsystemBase {
     return run(this::spin).withTimeout(4).finallyDo(interrupted -> stopSpin());
   }
 
+  public Command autoAlwaysShootCommand() {
+    System.out.println("shoot commanded");
+    // return run(this::spin).finallyDo(interrupted -> stopSpin());
+    return run(this::spin);
+  }
+
   public Command holdCommand() {
     return run(this::hold);
   }
