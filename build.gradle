@@ -2,7 +2,7 @@ import com.github.spotbugs.snom.Effort
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2024.2.1"
+    id "edu.wpi.first.GradleRIO" version "2024.3.2"
 
     // linting, style, and static analysis tools
     id 'com.diffplug.spotless' version '6.25.0' apply false
