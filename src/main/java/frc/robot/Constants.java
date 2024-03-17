@@ -180,4 +180,11 @@ public final class Constants {
     public static final int intermediaryCanID = 49; // temp
     public static final double intermediaryBackRotationalSpeed = -0.5; // temp of a temp
   }
+
+  public static final class ClimberConstants {
+    public static final int climberRightSpark = 5; // ????
+    public static final int climberLeftSpark = 20;
+    public static final double climberSpeed = 0.5;
+    public static final double reverseClimberSpeed = -0.5;
+  }
 }

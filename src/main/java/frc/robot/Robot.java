@@ -18,10 +18,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.sim.SimulationContext;
+import frc.robot.subsystems.climber.ClimberSubsystem;
 import frc.robot.subsystems.drive.DriveSubsystem;
 import frc.robot.subsystems.drive.MAXSwerveIO;
 import frc.robot.subsystems.drive.SimSwerveIO;
@@ -45,6 +48,7 @@ public class Robot extends TimedRobot {
   private ShooterSubsystem shooter;
   private DriveSubsystem drive;
   private IntermediarySubsystem intermediary;
+  private ClimberSubsystem climber;
 
   // Driver and operator controls
   private XboxController driverController;
@@ -92,12 +96,14 @@ public class Robot extends TimedRobot {
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
       intermediary = new IntermediarySubsystem();
+      climber = new ClimberSubsystem();
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
       shooter = new ShooterSubsystem();
       intake = new IntakeSubsystem();
       intermediary = new IntermediarySubsystem();
+      climber = new ClimberSubsystem();
     }
     leds = new LEDSubsystem();
 
@@ -170,6 +176,8 @@ public class Robot extends TimedRobot {
         .whileTrue(intake.spinReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR3.value)
         .whileTrue(shooter.ampCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kR1.value).whileTrue(climber.climbCommand()).onFalse(climber.stopClimbCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kCross.value).whileTrue(climber.reverseClimbCommand()).onFalse(climber.stopClimbCommand());
   }
 
   /**
