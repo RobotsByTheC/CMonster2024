@@ -164,9 +164,9 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-    new JoystickButton(driverController, PS4Controller.Button.kCross.value)
+   /*  new JoystickButton(driverController, PS4Controller.Button.kCross.value)
         .and(DriverStation::isTeleop)
-        .whileTrue(drive.setXCommand());
+        .whileTrue(drive.setXCommand());*/
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
         .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll()));
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
