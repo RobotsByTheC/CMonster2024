@@ -116,8 +116,9 @@ public class Robot extends TimedRobot {
     lStick = new Joystick(Constants.OIConstants.leftJoystickPort);
     rStick = new Joystick(Constants.OIConstants.rightJoystickPort);
 
-    // Configure the button bindings
+    // Configure the button bindings and automatic bindings
     configureButtonBindings();
+    configureAutomaticBindings();
 
     // Configure default commands
     drive.setDefaultCommand(drive.driveWithJoysticks(rStick::getY, rStick::getX, lStick::getTwist));
@@ -188,6 +189,10 @@ public class Robot extends TimedRobot {
         .whileTrue(shooter.ampCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR1.value).whileTrue(climber.climbCommand()).onFalse(climber.stopClimbCommand());
     new JoystickButton(driverController, PS4Controller.Button.kCross.value).whileTrue(climber.reverseClimbCommand()).onFalse(climber.stopClimbCommand());
+  }
+
+  private void configureAutomaticBindings() {
+    new Trigger(intermediary::noteCheck).onTrue(leds.crazyWhiteBlink().withTimeout(2));
   }
 
   /**
@@ -439,7 +444,8 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    leds.blinkYellow().schedule();
+    // leds.blinkYellow().schedule();
+    leds.greenPurpleGradient().schedule();
   }
 
   @Override
@@ -448,6 +454,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by the {@link #autoChooser}. */
   @Override
   public void autonomousInit() {
+    leds.police().schedule();
     autonomousCommand = getAutonomousCommand();
 
     // schedule the autonomous command (example)
@@ -469,7 +476,11 @@ public class Robot extends TimedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+
+    leds.greenPurpleScroll().schedule();
   }
+
+
 
   /** This function is called periodically during operator control. */
   @Override
