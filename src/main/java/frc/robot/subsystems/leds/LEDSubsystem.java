@@ -16,16 +16,30 @@ public class LEDSubsystem extends SubsystemBase {
   private final AddressableLED leds;
   private final AddressableLEDBuffer ledData;
 
-  // Use a view for compatibility with animations
-  private final AddressableLEDBufferView dataView;
+  // Use a view for compatibility with all
+  private final AddressableLEDBufferView all;
+  private final AddressableLEDBufferView rightUpperDiagonal;
+  private final AddressableLEDBufferView rightLowerDiagonal;
+  private final AddressableLEDBufferView rightVertical;
+  private final AddressableLEDBufferView leftUpperDiagonal;
+  private final AddressableLEDBufferView leftLowerDiagonal;
+  private final AddressableLEDBufferView leftVertical;
+  private final AddressableLEDBufferView across;
 
   public LEDSubsystem() {
     leds = new AddressableLED(Constants.LEDConstants.ledPortNumber);
     leds.setLength(Constants.LEDConstants.ledLength);
     leds.start();
     ledData = new AddressableLEDBuffer(Constants.LEDConstants.ledLength);
-    dataView = new AddressableLEDBufferView(ledData, 0, ledData.getLength() - 1);
+    all = new AddressableLEDBufferView(ledData, 0, ledData.getLength() - 1);
     setDefaultCommand(greenPurpleScroll());
+    rightUpperDiagonal = new AddressableLEDBufferView(ledData, 88, 110).reversed();
+    rightLowerDiagonal = new AddressableLEDBufferView(ledData, 111, 132);
+    rightVertical = new AddressableLEDBufferView(ledData, 133, 149).reversed();
+    leftUpperDiagonal = new AddressableLEDBufferView(ledData, 43, 64);
+    leftLowerDiagonal = new AddressableLEDBufferView(ledData, 20, 42).reversed();
+    leftVertical = new AddressableLEDBufferView(ledData, 0, 19);
+    across = new AddressableLEDBufferView(ledData,65 , 87);
   }
 
   @Override
@@ -34,7 +48,19 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command runAnimation(Animation animation) {
-    return run(() -> animation.update(dataView)).ignoringDisable(true);
+    return run(() -> animation.update(all)).ignoringDisable(true);
+  }
+
+  public Command runSpecialAnimation(Animation animation) {
+    return run(() -> {
+      animation.update(rightUpperDiagonal);
+      animation.update(rightLowerDiagonal);
+      animation.update(rightVertical);
+      animation.update(leftUpperDiagonal);
+      animation.update(leftLowerDiagonal);
+      animation.update(leftVertical);
+      animation.update(across);
+    }).ignoringDisable(true);
   }
 
   public Command blinkRed() {
@@ -54,7 +80,11 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command blinkYellow() {
-    return runAnimation(Animation.solid(Color.kYellow).blink(Seconds.of(1)));
+    return runAnimation(Animation.solid(Color.kOrange).blink(Seconds.of(1)));
+  }
+
+  public Command greenPurpleGradient() {
+    return runSpecialAnimation(Animation.gradient(Color.kGreen, Color.kPurple).scrollAtRelativeSpeed(Percent.per(Second).of(30)));
   }
 
   private static final Animation rainbowFlag =
@@ -74,21 +104,38 @@ public class LEDSubsystem extends SubsystemBase {
       rainbowFlag.scrollAtRelativeSpeed(Percent.per(Second).of(50));
 
   public Command rainbowFlagScroll() {
-    return runAnimation(rainbowFlagScroll);
+    return runSpecialAnimation(rainbowFlagScroll);
   }
 
   private static final Animation greenPurple =
       Animation.steps(
           Map.of(
-              0.0 / 2, Color.kLimeGreen,
+              0.0 / 2, Color.kGreen,
               1.0 / 4, Color.kPurple,
-              1.0 / 2, Color.kLimeGreen,
+              1.0 / 2, Color.kGreen,
               3.0 / 4, Color.kPurple));
+
+  private static final Animation redBlue =
+      Animation.steps(
+        Map.of(
+          0.0 / 2, Color.kRed,
+          1.0 / 4, Color.kBlue));
 
   private static final Animation greenPurpleScroll =
       greenPurple.scrollAtRelativeSpeed(Percent.per(Second).of(50));
+  
+  private static final Animation redBlueScroll =
+      redBlue.scrollAtRelativeSpeed(Percent.per(Second).of(50));
 
   public Command greenPurpleScroll() {
     return runAnimation(greenPurpleScroll);
+  }
+
+  public Command crazyWhiteBlink() {
+    return runAnimation(Animation.solid(Color.kWhite).blink(Seconds.of(.1)));
+  }
+
+  public Command police() {
+    return runSpecialAnimation(redBlueScroll);
   }
 }

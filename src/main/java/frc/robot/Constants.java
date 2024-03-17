@@ -172,7 +172,7 @@ public final class Constants {
 
   public static final class LEDConstants {
     public static final int ledPortNumber = 0; // temp
-    public static final int ledLength = 30; // temp
+    public static final int ledLength = 150; // temp, set to 150 for full strand
   }
 
   public static final class IntermediaryConstants {
