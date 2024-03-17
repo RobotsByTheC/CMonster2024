@@ -28,8 +28,8 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void ampShot() {
-    rSpark.setVoltage(2.2);
-    lSpark.setVoltage(2.2);
+    rSpark.set(0.2);
+    lSpark.set(0.2);
   }
 
   public void stopSpin() {
@@ -53,7 +53,7 @@ public class ShooterSubsystem extends SubsystemBase {
   public Command autoShootCommand1() {
     System.out.println("shoot commanded");
     // return run(this::spin).finallyDo(interrupted -> stopSpin());
-    return run(this::spin).withTimeout(3).finallyDo(interrupted -> stopSpin());
+    return run(this::spin).withTimeout(4).finallyDo(interrupted -> stopSpin());
   }
 
   public Command autoShootCommand2() {
