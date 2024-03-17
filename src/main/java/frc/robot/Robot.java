@@ -58,7 +58,9 @@ public class Robot extends TimedRobot {
   enum Positions {
     STAGE,
     CENTER,
-    AMP
+    AMP,
+    NEXT2STAGE,
+    NEXT2AMP
   }
 
   enum Notes {
@@ -66,7 +68,10 @@ public class Robot extends TimedRobot {
     CENTER,
     AMP,
     NOTHING,
-    DRIVE
+    DRIVE,
+    NEXT2STAGE,
+    NEXT2AMP,
+    GOFORWARDS
   }
 
   private final SendableChooser<Positions> startingPositionChooser = new SendableChooser<>();
@@ -122,6 +127,8 @@ public class Robot extends TimedRobot {
     startingPositionChooser.setDefaultOption("Stage", Positions.STAGE);
     startingPositionChooser.addOption("Center", Positions.CENTER);
     startingPositionChooser.addOption("Amp", Positions.AMP);
+    startingPositionChooser.addOption("next 2 amp", Positions.NEXT2AMP);
+    startingPositionChooser.addOption("next 2 stage", Positions.NEXT2STAGE);
     SmartDashboard.putData("starting position", startingPositionChooser);
 
     noteChooser1.setDefaultOption("be useless", Notes.NOTHING);
@@ -129,6 +136,9 @@ public class Robot extends TimedRobot {
     noteChooser1.addOption("Stage", Notes.STAGE);
     noteChooser1.addOption("Amp Note", Notes.AMP);
     noteChooser1.addOption("Drive", Notes.DRIVE);
+    noteChooser1.addOption("Next 2 Amp", Notes.NEXT2AMP);
+    noteChooser1.addOption("Next 2 Stage", Notes.NEXT2STAGE);
+    noteChooser1.addOption("Go Forwards", Notes.GOFORWARDS);
     SmartDashboard.putData("note chooser 1", noteChooser1);
 
     noteChooser2.setDefaultOption("be useless", Notes.NOTHING);
@@ -190,9 +200,7 @@ public class Robot extends TimedRobot {
       case AMP -> {
         Command auto =
             shooter
-                .autoShootCommand1()
-                .andThen(intermediary.intermediaryCommand())
-                .alongWith(shooter.autoShootCommand2());
+                .autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
@@ -243,9 +251,7 @@ public class Robot extends TimedRobot {
       case CENTER -> {
         Command auto =
             shooter
-                .autoShootCommand1()
-                .andThen(intermediary.intermediaryCommand())
-                .alongWith(shooter.autoShootCommand2());
+                .autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
@@ -293,9 +299,7 @@ public class Robot extends TimedRobot {
       case STAGE -> {
         Command auto =
             shooter
-                .autoShootCommand1()
-                .andThen(intermediary.intermediaryCommand())
-                .alongWith(shooter.autoShootCommand2());
+                .autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
@@ -307,6 +311,9 @@ public class Robot extends TimedRobot {
           }
           case NOTHING -> {
             done = true;
+          }
+          case GOFORWARDS -> {
+            auto = drive.followChoreoTrajectory("goForwards");
           }
           default -> {
             done = true;
@@ -345,6 +352,45 @@ public class Robot extends TimedRobot {
         }
         yield auto;
       }
+      
+      case NEXT2AMP -> {
+        Command auto =
+            shooter
+                .autoShootCommand1()
+                .andThen(shootAndIntermediary());
+        boolean done = false;
+        switch (noteChooser1.getSelected()) {
+          case NOTHING -> {
+            done = true;
+          }
+          default -> {
+            done = true;
+          }
+          case NEXT2AMP -> {
+            auto = followPathAndShoot("next 2 amp");
+          }
+        }
+        yield auto;
+      }
+      case NEXT2STAGE -> {
+        Command auto =
+            shooter
+                .autoShootCommand1()
+                .andThen(shootAndIntermediary());
+        boolean done = false;
+        switch (noteChooser1.getSelected()) {
+          case NOTHING -> {
+            done = true;
+          }
+          default -> {
+            done = true;
+          }
+          case NEXT2STAGE -> {
+            auto = followPathAndShoot("next 2 stage");
+          }
+        }
+        yield auto;
+      }
     };
   }
 
@@ -359,6 +405,10 @@ public class Robot extends TimedRobot {
                 .andThen(intermediary.intermediaryCommand())
                 .alongWith(shooter.autoShootCommand2())
                 .deadlineWith(intermediary.intermediaryCommand()));
+  }
+
+  private ParallelCommandGroup shootAndIntermediary() {
+    return intermediary.intermediaryCommand().alongWith(shooter.autoShootCommand2());
   }
 
   /**
