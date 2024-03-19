@@ -71,7 +71,8 @@ public class Robot extends TimedRobot {
     DRIVE,
     NEXT2STAGE,
     NEXT2AMP,
-    GOFORWARDS
+    GOFORWARDS,
+    CENTERSHOOTDRIVE
   }
 
   private final SendableChooser<Positions> startingPositionChooser = new SendableChooser<>();
@@ -93,7 +94,7 @@ public class Robot extends TimedRobot {
     AHRS ahrs = new AHRS(SerialPort.Port.kMXP);
 
     var driverCamera = CameraServer.startAutomaticCapture();
-    driverCamera.setPixelFormat(PixelFormat.kYUYV);
+    //driverCamera.setPixelFormat(PixelFormat.kYUYV);
     driverCamera.setResolution(1280, 720);
 
     if (Robot.isSimulation()) {
@@ -140,6 +141,7 @@ public class Robot extends TimedRobot {
     noteChooser1.addOption("Next 2 Amp", Notes.NEXT2AMP);
     noteChooser1.addOption("Next 2 Stage", Notes.NEXT2STAGE);
     noteChooser1.addOption("Go Forwards", Notes.GOFORWARDS);
+    noteChooser1.addOption("Shoot note then drive", Notes.CENTERSHOOTDRIVE);
     SmartDashboard.putData("note chooser 1", noteChooser1);
 
     noteChooser2.setDefaultOption("be useless", Notes.NOTHING);
@@ -164,9 +166,9 @@ public class Robot extends TimedRobot {
    * {@link JoystickButton}.
    */
   private void configureButtonBindings() {
-   /*  new JoystickButton(driverController, PS4Controller.Button.kCross.value)
-        .and(DriverStation::isTeleop)
-        .whileTrue(drive.setXCommand());*/
+    /*  new JoystickButton(driverController, PS4Controller.Button.kCross.value)
+    .and(DriverStation::isTeleop)
+    .whileTrue(drive.setXCommand());*/
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
         .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll()));
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
@@ -187,8 +189,12 @@ public class Robot extends TimedRobot {
         .whileTrue(intake.spinReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR3.value)
         .whileTrue(shooter.ampCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kR1.value).whileTrue(climber.climbCommand()).onFalse(climber.stopClimbCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kCross.value).whileTrue(climber.reverseClimbCommand()).onFalse(climber.stopClimbCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kR1.value)
+        .whileTrue(climber.climbCommand())
+        .onFalse(climber.stopClimbCommand());
+    new JoystickButton(driverController, PS4Controller.Button.kCross.value)
+        .whileTrue(climber.reverseClimbCommand())
+        .onFalse(climber.stopClimbCommand());
   }
 
   private void configureAutomaticBindings() {
@@ -203,9 +209,7 @@ public class Robot extends TimedRobot {
   public Command getAutonomousCommand() {
     return switch (startingPositionChooser.getSelected()) {
       case AMP -> {
-        Command auto =
-            shooter
-                .autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
@@ -254,9 +258,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case CENTER -> {
-        Command auto =
-            shooter
-                .autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
@@ -268,6 +270,7 @@ public class Robot extends TimedRobot {
           case NOTHING -> {
             done = true;
           }
+          case CENTERSHOOTDRIVE -> auto = shootThenDrive();
           default -> {
             done = true;
           }
@@ -302,9 +305,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case STAGE -> {
-        Command auto =
-            shooter
-                .autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
@@ -357,12 +358,9 @@ public class Robot extends TimedRobot {
         }
         yield auto;
       }
-      
+
       case NEXT2AMP -> {
-        Command auto =
-            shooter
-                .autoShootCommand1()
-                .andThen(shootAndIntermediary());
+        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case NOTHING -> {
@@ -378,10 +376,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case NEXT2STAGE -> {
-        Command auto =
-            shooter
-                .autoShootCommand1()
-                .andThen(shootAndIntermediary());
+        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case NOTHING -> {
@@ -414,6 +409,14 @@ public class Robot extends TimedRobot {
 
   private ParallelCommandGroup shootAndIntermediary() {
     return intermediary.intermediaryCommand().alongWith(shooter.autoShootCommand2());
+  }
+
+  private SequentialCommandGroup shootThenDrive() {
+    return drive
+        .pointForward()
+        .andThen(drive.autoDriveCommand())
+        .withTimeout(1)
+        .andThen(drive.setXCommand());
   }
 
   /**
@@ -479,8 +482,6 @@ public class Robot extends TimedRobot {
 
     leds.greenPurpleScroll().schedule();
   }
-
-
 
   /** This function is called periodically during operator control. */
   @Override

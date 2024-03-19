@@ -14,6 +14,9 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.choreo.lib.Choreo;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -137,7 +140,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
       Measure<Velocity<Distance>> xSpeed,
       Measure<Velocity<Distance>> ySpeed,
       Measure<Velocity<Angle>> rot,
-      ReferenceFrame orientation) {
+      ReferenceFrame orientation) 
+      {
     var speeds =
         switch (orientation) {
           case ROBOT -> new ChassisSpeeds(xSpeed, ySpeed, rot);
@@ -145,6 +149,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         };
     drive(speeds);
   }
+
 
   /**
    * Drives the robot with the given chassis speeds. Note that chassis speeds are relative to the
@@ -356,4 +361,27 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
           new SwerveModuleState(0, Rotation2d.fromDegrees(0))
         });
   }
+
+  private final CANSparkMax rearLeftDrivingSpark =
+      new CANSparkMax(Constants.DriveConstants.rearLeftDrivingCanId, MotorType.kBrushless);
+      private final CANSparkMax rearRightDrivingSpark =
+      new CANSparkMax(Constants.DriveConstants.rearRightDrivingCanId, MotorType.kBrushless);
+      private final CANSparkMax frontRightDrivingSpark =
+      new CANSparkMax(Constants.DriveConstants.frontRightDrivingCanId, MotorType.kBrushless);
+      private final CANSparkMax frontLeftDrivingSpark =
+      new CANSparkMax(Constants.DriveConstants.frontLeftDrivingCanId, MotorType.kBrushless);
+
+  public void autoDrive() {
+    // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
+    rearLeftDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
+    rearRightDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
+    frontLeftDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
+    frontRightDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
+  }
+
+  public Command autoDriveCommand() {
+    return run(this::autoDrive);
+  }
+  
 }
+

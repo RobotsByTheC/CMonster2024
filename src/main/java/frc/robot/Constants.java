@@ -79,6 +79,8 @@ public final class Constants {
     public static final int frontRightTurningCanId = 10;
     public static final int rearRightTurningCanId = 25;
 
+    public static final double drivingSpeed = 1;
+
     public static final boolean gyroReversed = false;
   }
 

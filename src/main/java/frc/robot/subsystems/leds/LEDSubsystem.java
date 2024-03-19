@@ -39,7 +39,7 @@ public class LEDSubsystem extends SubsystemBase {
     leftUpperDiagonal = new AddressableLEDBufferView(ledData, 43, 64);
     leftLowerDiagonal = new AddressableLEDBufferView(ledData, 20, 42).reversed();
     leftVertical = new AddressableLEDBufferView(ledData, 0, 19);
-    across = new AddressableLEDBufferView(ledData,65 , 87);
+    across = new AddressableLEDBufferView(ledData, 65, 87);
   }
 
   @Override
@@ -53,14 +53,15 @@ public class LEDSubsystem extends SubsystemBase {
 
   public Command runSpecialAnimation(Animation animation) {
     return run(() -> {
-      animation.update(rightUpperDiagonal);
-      animation.update(rightLowerDiagonal);
-      animation.update(rightVertical);
-      animation.update(leftUpperDiagonal);
-      animation.update(leftLowerDiagonal);
-      animation.update(leftVertical);
-      animation.update(across);
-    }).ignoringDisable(true);
+          animation.update(rightUpperDiagonal);
+          animation.update(rightLowerDiagonal);
+          animation.update(rightVertical);
+          animation.update(leftUpperDiagonal);
+          animation.update(leftLowerDiagonal);
+          animation.update(leftVertical);
+          animation.update(across);
+        })
+        .ignoringDisable(true);
   }
 
   public Command blinkRed() {
@@ -84,7 +85,9 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command greenPurpleGradient() {
-    return runSpecialAnimation(Animation.gradient(Color.kGreen, Color.kPurple).scrollAtRelativeSpeed(Percent.per(Second).of(30)));
+    return runSpecialAnimation(
+        Animation.gradient(Color.kGreen, Color.kPurple)
+            .scrollAtRelativeSpeed(Percent.per(Second).of(30)));
   }
 
   private static final Animation rainbowFlag =
@@ -117,13 +120,13 @@ public class LEDSubsystem extends SubsystemBase {
 
   private static final Animation redBlue =
       Animation.steps(
-        Map.of(
-          0.0 / 2, Color.kRed,
-          1.0 / 4, Color.kBlue));
+          Map.of(
+              0.0 / 2, Color.kRed,
+              1.0 / 4, Color.kBlue));
 
   private static final Animation greenPurpleScroll =
       greenPurple.scrollAtRelativeSpeed(Percent.per(Second).of(50));
-  
+
   private static final Animation redBlueScroll =
       redBlue.scrollAtRelativeSpeed(Percent.per(Second).of(50));
 
