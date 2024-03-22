@@ -5,7 +5,9 @@
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Feet;
+import static edu.wpi.first.units.Units.FeetPerSecond;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -14,9 +16,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.choreo.lib.Choreo;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -34,6 +33,7 @@ import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
@@ -84,6 +84,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     SmartDashboard.putData("FR", io.frontRight());
     SmartDashboard.putData("RL", io.rearLeft());
     SmartDashboard.putData("RR", io.rearRight());
+
+    Shuffleboard.getTab("Drive")
+        .add("zero heading", runOnce(this::zeroHeading).ignoringDisable(true));
   }
 
   private Pose2d lastPose = new Pose2d();
@@ -140,8 +143,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
       Measure<Velocity<Distance>> xSpeed,
       Measure<Velocity<Distance>> ySpeed,
       Measure<Velocity<Angle>> rot,
-      ReferenceFrame orientation) 
-      {
+      ReferenceFrame orientation) {
     var speeds =
         switch (orientation) {
           case ROBOT -> new ChassisSpeeds(xSpeed, ySpeed, rot);
@@ -149,7 +151,6 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         };
     drive(speeds);
   }
-
 
   /**
    * Drives the robot with the given chassis speeds. Note that chassis speeds are relative to the
@@ -249,7 +250,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
                       state -> {
                         double v = Math.abs(state.speedMetersPerSecond);
                         double angle = state.angle.getDegrees();
-                        return v <= 0.01 && Math.abs(angle % 45) <= 1;
+                        return v <= 0.01 && Math.abs(angle % 45) <= 1.5;
                       });
             })
         .withName("Set X");
@@ -280,7 +281,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               MathUtil.applyDeadband(y.getAsDouble(), 0.01)
                   * DriveConstants.maxSpeed.in(MetersPerSecond));
           omegaSpeed.mut_setMagnitude(
-              MathUtil.applyDeadband(-omega.getAsDouble(), .08) * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
+              MathUtil.applyDeadband(-omega.getAsDouble(), .08)
+                  * DriveConstants.maxAngularSpeed.in(RadiansPerSecond));
 
           drive(xSpeed, ySpeed, omegaSpeed, ReferenceFrame.FIELD);
         })
@@ -344,9 +346,8 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               return Arrays.stream(getModuleStates())
                   .allMatch(
                       state -> {
-                        double v = Math.abs(state.speedMetersPerSecond);
-                        double angle = state.angle.getSin();
-                        return .01 >= v && 1 / 90.0 >= angle && angle >= -1 / 90.0;
+                        double angle = state.angle.getDegrees();
+                        return 1.5 >= angle && angle >= -1.5;
                       });
             })
         .withName("Set 0");
@@ -362,26 +363,36 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         });
   }
 
-  private final CANSparkMax rearLeftDrivingSpark =
-      new CANSparkMax(Constants.DriveConstants.rearLeftDrivingCanId, MotorType.kBrushless);
-      private final CANSparkMax rearRightDrivingSpark =
-      new CANSparkMax(Constants.DriveConstants.rearRightDrivingCanId, MotorType.kBrushless);
-      private final CANSparkMax frontRightDrivingSpark =
-      new CANSparkMax(Constants.DriveConstants.frontRightDrivingCanId, MotorType.kBrushless);
-      private final CANSparkMax frontLeftDrivingSpark =
-      new CANSparkMax(Constants.DriveConstants.frontLeftDrivingCanId, MotorType.kBrushless);
-
-  public void autoDrive() {
-    // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
-    rearLeftDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
-    rearRightDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
-    frontLeftDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
-    frontRightDrivingSpark.set(Constants.DriveConstants.drivingSpeed);
+  public Command autoDriveForwardCommand() {
+    return run(() -> {
+          drive(
+              FeetPerSecond.of(7),
+              MetersPerSecond.of(0),
+              DegreesPerSecond.zero(),
+              ReferenceFrame.ROBOT);
+        })
+        .withTimeout(1.1);
   }
 
-  public Command autoDriveCommand() {
-    return run(this::autoDrive);
+  public Command autoDriveBackwardCommand() {
+    return run(() -> {
+          drive(
+              FeetPerSecond.of(-7),
+              MetersPerSecond.of(0),
+              DegreesPerSecond.zero(),
+              ReferenceFrame.ROBOT);
+        })
+        .withTimeout(1.1);
   }
-  
+
+  public Command autoDriveDiagonalCommand() {
+    return run(() -> {
+          drive(
+              FeetPerSecond.of(2),
+              MetersPerSecond.of(0),
+              DegreesPerSecond.zero(),
+              ReferenceFrame.ROBOT);
+        })
+        .withTimeout(6);
 }
-
+}

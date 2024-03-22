@@ -72,7 +72,8 @@ public class Robot extends TimedRobot {
     NEXT2STAGE,
     NEXT2AMP,
     GOFORWARDS,
-    CENTERSHOOTDRIVE
+    CENTERSHOOTDRIVE,
+    DIAGONALSHOOTDRIVE
   }
 
   private final SendableChooser<Positions> startingPositionChooser = new SendableChooser<>();
@@ -94,21 +95,21 @@ public class Robot extends TimedRobot {
     AHRS ahrs = new AHRS(SerialPort.Port.kMXP);
 
     var driverCamera = CameraServer.startAutomaticCapture();
-    //driverCamera.setPixelFormat(PixelFormat.kYUYV);
+    // driverCamera.setPixelFormat(PixelFormat.kYUYV);
     driverCamera.setResolution(1280, 720);
 
     if (Robot.isSimulation()) {
       drive = new DriveSubsystem(new SimSwerveIO());
-      shooter = new ShooterSubsystem();
-      intake = new IntakeSubsystem();
+            intake = new IntakeSubsystem();
       intermediary = new IntermediarySubsystem();
+shooter = new ShooterSubsystem(intermediary::noteCheck);
       climber = new ClimberSubsystem();
     } else {
       // Running on real hardware
       drive = new DriveSubsystem(new MAXSwerveIO());
-      shooter = new ShooterSubsystem();
-      intake = new IntakeSubsystem();
+            intake = new IntakeSubsystem();
       intermediary = new IntermediarySubsystem();
+shooter = new ShooterSubsystem(intermediary::noteCheck);
       climber = new ClimberSubsystem();
     }
     leds = new LEDSubsystem();
@@ -141,7 +142,8 @@ public class Robot extends TimedRobot {
     noteChooser1.addOption("Next 2 Amp", Notes.NEXT2AMP);
     noteChooser1.addOption("Next 2 Stage", Notes.NEXT2STAGE);
     noteChooser1.addOption("Go Forwards", Notes.GOFORWARDS);
-    noteChooser1.addOption("Shoot note then drive", Notes.CENTERSHOOTDRIVE);
+    noteChooser1.addOption("centershootdrive", Notes.CENTERSHOOTDRIVE);
+noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
     SmartDashboard.putData("note chooser 1", noteChooser1);
 
     noteChooser2.setDefaultOption("be useless", Notes.NOTHING);
@@ -209,7 +211,7 @@ public class Robot extends TimedRobot {
   public Command getAutonomousCommand() {
     return switch (startingPositionChooser.getSelected()) {
       case AMP -> {
-        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = speakerShot();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("amp 3 p1"));
@@ -219,6 +221,7 @@ public class Robot extends TimedRobot {
             auto = auto.andThen(drive.followChoreoTrajectory("amp drive"));
             done = true;
           }
+case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
           case NOTHING -> {
             done = true;
           }
@@ -258,7 +261,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case CENTER -> {
-        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = speakerShot();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case CENTER -> auto = auto.andThen(followPathAndShoot("center 3 p1"));
@@ -270,7 +273,7 @@ public class Robot extends TimedRobot {
           case NOTHING -> {
             done = true;
           }
-          case CENTERSHOOTDRIVE -> auto = shootThenDrive();
+          case CENTERSHOOTDRIVE -> auto = auto.andThen(deadReckoningForward());
           default -> {
             done = true;
           }
@@ -305,7 +308,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case STAGE -> {
-        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = speakerShot();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case AMP -> auto = auto.andThen(followPathAndShoot("stage 3 p1"));
@@ -315,6 +318,7 @@ public class Robot extends TimedRobot {
             auto = auto.andThen(drive.followChoreoTrajectory("stage drive"));
             done = true;
           }
+case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
           case NOTHING -> {
             done = true;
           }
@@ -360,7 +364,7 @@ public class Robot extends TimedRobot {
       }
 
       case NEXT2AMP -> {
-        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = speakerShot();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case NOTHING -> {
@@ -376,7 +380,7 @@ public class Robot extends TimedRobot {
         yield auto;
       }
       case NEXT2STAGE -> {
-        Command auto = shooter.autoShootCommand1().andThen(shootAndIntermediary());
+        Command auto = speakerShot();
         boolean done = false;
         switch (noteChooser1.getSelected()) {
           case NOTHING -> {
@@ -397,25 +401,43 @@ public class Robot extends TimedRobot {
   private SequentialCommandGroup followPathAndShoot(String p) {
     return drive
         .followChoreoTrajectory(p)
-        .andThen(drive.setXCommand())
+        .andThen(drive.setXCommand().withTimeout(1))
         .deadlineWith(intake.intakeCommand())
         .andThen(
             shooter
                 .autoShootCommand1()
-                .andThen(intermediary.intermediaryCommand())
-                .alongWith(shooter.autoShootCommand2())
-                .deadlineWith(intermediary.intermediaryCommand()));
+                .andThen(
+                    shooter.autoShootCommand2().deadlineWith(intermediary.intermediaryCommand())));
   }
 
-  private ParallelCommandGroup shootAndIntermediary() {
-    return intermediary.intermediaryCommand().alongWith(shooter.autoShootCommand2());
+  private Command speakerShot() {
+    return intermediary
+        .intermediaryReverseCommand()
+        .withTimeout(.5)
+        .andThen(
+            shooter
+                .autoShootCommand1()
+                .deadlineWith(drive.setXCommand())
+                .andThen(
+                    shooter.autoShootCommand2().deadlineWith(intermediary.intermediaryCommand())));
   }
 
-  private SequentialCommandGroup shootThenDrive() {
+  private SequentialCommandGroup deadReckoningForward() {
     return drive
         .pointForward()
-        .andThen(drive.autoDriveCommand())
-        .withTimeout(1)
+                .withTimeout(1)
+.andThen(
+            drive
+                .autoDriveForwardCommand()
+                .deadlineWith(intermediary.intermediaryCommand(), intake.intakeCommand()))
+        .andThen(drive.autoDriveBackwardCommand())
+        .andThen(speakerShot());
+  }
+
+  private SequentialCommandGroup deadReckoningDiagonal() {
+    return drive
+        .pointForward()
+        .andThen(drive.autoDriveDiagonalCommand())
         .andThen(drive.setXCommand());
   }
 
