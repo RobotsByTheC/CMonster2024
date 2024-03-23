@@ -61,6 +61,13 @@ rSparkPID.setP(.00);
     System.out.println("spinning motors");
   }
 
+  public void reverseSpin() {
+    rSparkPID.setReference(
+        -1700, CANSparkMax.ControlType.kVelocity);
+    lSparkPID.setReference(
+        -1700, CANSparkMax.ControlType.kVelocity);
+  }
+
   public boolean atSpeakerSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
@@ -113,7 +120,11 @@ rSparkPID.setP(.00);
   public Command autoShootCommand1() {
     System.out.println("shoot commanded");
     // return run(this::spin).finallyDo(interrupted -> stopSpin());
-    return run(this::spin).until(this::atSpeakerSpeed);
+    return run(this::spin).until(this::atSpeakerSpeed).withTimeout(2);
+  }
+
+  public Command reverseShooterCommand() {
+    return run(this::reverseSpin).finallyDo(interrupted -> stopSpin());
   }
 
   public Command autoShootCommand2() {

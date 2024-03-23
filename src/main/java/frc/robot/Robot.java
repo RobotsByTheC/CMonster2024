@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -188,7 +189,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
     new JoystickButton(driverController, PS4Controller.Button.kCircle.value)
-        .whileTrue(intake.spinReverseCommand());
+        .whileTrue(intake.spinReverseCommand()).whileTrue(shooter.reverseShooterCommand()).whileTrue(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR3.value)
         .whileTrue(shooter.ampCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
@@ -273,7 +274,8 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
           case NOTHING -> {
             done = true;
           }
-          case CENTERSHOOTDRIVE -> auto = auto.andThen(deadReckoningForward());
+          case CENTERSHOOTDRIVE -> {auto = auto.andThen(deadReckoningForward());
+          done = true;}
           default -> {
             done = true;
           }
@@ -423,10 +425,11 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
   }
 
   private SequentialCommandGroup deadReckoningForward() {
-    return drive
+    return new PrintCommand("deadReckoningForward")
+    .andThen(drive
         .pointForward()
-                .withTimeout(1)
-.andThen(
+                .withTimeout(1)).andThen(new PrintCommand("gonna drive now"))
+    .andThen(
             drive
                 .autoDriveForwardCommand()
                 .deadlineWith(intermediary.intermediaryCommand(), intake.intakeCommand()))

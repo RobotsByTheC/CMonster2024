@@ -370,8 +370,10 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               MetersPerSecond.of(0),
               DegreesPerSecond.zero(),
               ReferenceFrame.ROBOT);
+            System.out.println("driving forward");
         })
         .withTimeout(1.1);
+        
   }
 
   public Command autoDriveBackwardCommand() {
