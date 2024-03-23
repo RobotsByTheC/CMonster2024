@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ClimberSubsystem extends SubsystemBase {
@@ -18,24 +19,37 @@ public class ClimberSubsystem extends SubsystemBase {
 
   public void startClimb() {
     // spark.setVoltage(SmartDashboard.getNumber("Spin voltage", 0));
+    if (leftSpark.getEncoder().getPosition() < -81)
+    {
+      stopClimb();
+    }
+    else 
+    {
     rightSpark.set(Constants.ClimberConstants.climberSpeed);
     leftSpark.set(Constants.ClimberConstants.reverseClimberSpeed);
-    SmartDashboard.putNumber("left climb distance", leftSpark.getEncoder().getPosition());
-    SmartDashboard.putNumber("right climb distance", rightSpark.getEncoder().getPosition());
+    System.out.println(leftSpark.getEncoder().getPosition());
+    }
   }
 
   public void reverseClimb() {
+    if (leftSpark.getEncoder().getPosition() > -0.1)
+    {
+      stopClimb();
+    }
+    else 
+    {
     rightSpark.set(Constants.ClimberConstants.reverseClimberSpeed);
     leftSpark.set(Constants.ClimberConstants.climberSpeed);
-    SmartDashboard.putNumber("left climb distance", leftSpark.getEncoder().getPosition());
-    SmartDashboard.putNumber("right climb distance", rightSpark.getEncoder().getPosition());
+    System.out.println(leftSpark.getEncoder().getPosition());
+    }
   }
 
   public void stopClimb() {
     leftSpark.set(0);
     rightSpark.set(0);
-    SmartDashboard.putNumber("left climb distance", leftSpark.getEncoder().getPosition());
-    SmartDashboard.putNumber("right climb distance", rightSpark.getEncoder().getPosition());
+    //Shuffleboard.getTab("left climb distance").add(leftSpark.getEncoder().getPosition());
+    System.out.println(leftSpark.getEncoder().getPosition());
+    //SmartDashboard.putNumber("right climb distance", rightSpark.getEncoder().getPosition());
   }
 
   public Command climbCommand() {

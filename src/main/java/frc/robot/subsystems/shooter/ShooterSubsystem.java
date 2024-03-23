@@ -69,27 +69,26 @@ rSparkPID.setP(.00);
     else rightAtSpeed = true;
     if (lSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .95 * 0.9)
       leftAtSpeed = false;
-    else leftAtSpeed = true;
+    else 
+    leftAtSpeed = true;
     return rightAtSpeed && leftAtSpeed;
   }
 
   public boolean atAmpSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
-    if (rSparkEncoder.getVelocity() > 1040.6 * .9 && rSparkEncoder.getVelocity() < 1040.6*1.1)
+    if (rSparkEncoder.getVelocity() > 1700 * .9 && rSparkEncoder.getVelocity() < 1700*1.1)
       rightAtSpeed = true;
     else rightAtSpeed = false;
-    if (lSparkEncoder.getVelocity() > 1040.6 * .9 && lSparkEncoder.getVelocity() < 1040.6*1.1) // 1040.6 is amp speed
+    if (lSparkEncoder.getVelocity() > 1700 * .9 && lSparkEncoder.getVelocity() < 1700*1.1) // 1040.6 is amp speed
       leftAtSpeed = true;
     else leftAtSpeed = false;
     return rightAtSpeed && leftAtSpeed;
   }
 
   public void ampShot() {
-    rSparkPID.setReference(
-        1040.6, CANSparkMax.ControlType.kVelocity);
-    lSparkPID.setReference(
-        1040.6, CANSparkMax.ControlType.kVelocity);
+    rSpark.set(.32);
+    lSpark.set(.32);
     System.out.println("spinning motors");
   }
 
