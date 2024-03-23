@@ -179,7 +179,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
         .whileTrue(intake.intakeCommand())
         .whileFalse(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
-        .whileTrue(shooter.ampCommand().deadlineWith(leds.blinkPurple()));
+        .whileTrue(shooter.ampCommand().deadlineWith(leds.blinkPurple())).onFalse(shooter.stopSpinCommand());
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
         .and(DriverStation::isTest)
         .whileTrue(
@@ -190,8 +190,6 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
     new JoystickButton(driverController, PS4Controller.Button.kCircle.value)
         .whileTrue(intake.spinReverseCommand()).whileTrue(shooter.reverseShooterCommand()).whileTrue(intermediary.intermediaryReverseCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kR3.value)
-        .whileTrue(shooter.ampCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
         .whileTrue(climber.climbCommand())
         .onFalse(climber.stopClimbCommand());

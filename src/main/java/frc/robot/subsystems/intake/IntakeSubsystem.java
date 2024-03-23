@@ -45,6 +45,6 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public Command spinReverseCommand() {
-    return run(this::spinReverse).finallyDo(interrupted -> stopSpin());
+    return run(this::spinReverse).withTimeout(.1).finallyDo(interrupted -> stopSpin());
   }
 }

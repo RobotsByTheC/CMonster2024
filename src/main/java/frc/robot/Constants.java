@@ -163,6 +163,7 @@ public final class Constants {
   public static final class ShooterConstants {
     public static final int rightShooterCanId = 13;
     public static final int leftShooterCanId = 16;
+    public static final int ampSpeed = 1150;
   }
 
   // intake constants

@@ -84,18 +84,20 @@ rSparkPID.setP(.00);
   public boolean atAmpSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
-    if (rSparkEncoder.getVelocity() > 1700 * .9 && rSparkEncoder.getVelocity() < 1700*1.1)
+    if (rSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .9 && rSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed*1.1)
       rightAtSpeed = true;
     else rightAtSpeed = false;
-    if (lSparkEncoder.getVelocity() > 1700 * .9 && lSparkEncoder.getVelocity() < 1700*1.1) // 1040.6 is amp speed
+    if (lSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .9 && lSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed*1.1) // 1040.6 is amp speed
       leftAtSpeed = true;
     else leftAtSpeed = false;
     return rightAtSpeed && leftAtSpeed;
   }
 
   public void ampShot() {
-    rSpark.set(.32);
-    lSpark.set(.32);
+    rSparkPID.setReference(
+        Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
+    lSparkPID.setReference(
+        Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
     System.out.println("spinning motors");
   }
 
@@ -148,7 +150,7 @@ rSparkPID.setP(.00);
   }
 
   public Command ampCommand() {
-    return run(this::ampShot).finallyDo(interrupted -> stopSpin());
+    return run(this::ampShot);
   }
 
   @Override
