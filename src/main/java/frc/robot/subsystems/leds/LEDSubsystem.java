@@ -77,7 +77,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command blinkPurple() {
-    return runAnimation(Animation.solid(Color.kViolet).blink(Seconds.of(1)));
+    return runAnimation(Animation.solid(Color.kPurple).blink(Seconds.of(1)));
   }
 
   public Command blinkYellow() {
