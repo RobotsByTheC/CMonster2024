@@ -173,7 +173,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
     .and(DriverStation::isTeleop)
     .whileTrue(drive.setXCommand());*/
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
-        .whileTrue(shooter.manualShootCommand()).whileTrue(leds.blinkGreen());
+        .whileTrue(shooter.manualShootCommand()).whileTrue(leds.blinkGreen()).onFalse(leds.greenPurpleScroll());
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
         .whileTrue(intermediary.intermediaryCommand())
         .whileTrue(intake.intakeCommand())
@@ -201,7 +201,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
   }
 
   private void configureAutomaticBindings() {
-    new Trigger(intermediary::noteCheck).onTrue(leds.crazyWhiteBlink().withTimeout(1));
+    new Trigger(intermediary::noteCheck).onTrue(leds.blinkRed().withTimeout(1));
     new Trigger(shooter::atSpeakerSpeed).onTrue(leds.rainbowFlagScroll());
   }
     

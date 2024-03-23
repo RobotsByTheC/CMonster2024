@@ -65,7 +65,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command blinkRed() {
-    return runAnimation(Animation.solid(Color.kRed).blink(Seconds.of(1)));
+    return runAnimation(Animation.solid(Color.kRed).blink(Seconds.of(.1)));
   }
 
   public Command blinkBlue() {
@@ -73,7 +73,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command blinkGreen() {
-    return runAnimation(Animation.solid(Color.kGreen).blink(Seconds.of(1)));
+    return runAnimation(Animation.solid(Color.kGreen).blink(Seconds.of(.2)));
   }
 
   public Command blinkPurple() {
@@ -135,7 +135,7 @@ public class LEDSubsystem extends SubsystemBase {
   }
 
   public Command crazyWhiteBlink() {
-    return runAnimation(Animation.solid(Color.kWhite).blink(Seconds.of(.1)));
+    return runAnimation(Animation.solid(Color.kGray).blink(Seconds.of(.1)));
   }
 
   public Command police() {
