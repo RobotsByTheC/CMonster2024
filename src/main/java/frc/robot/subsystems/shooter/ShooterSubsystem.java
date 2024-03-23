@@ -71,10 +71,10 @@ rSparkPID.setP(.00);
   public boolean atSpeakerSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
-    if (rSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .93)
+    if (rSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .91)
       rightAtSpeed = false;
     else rightAtSpeed = true;
-    if (lSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .95 * 0.93)
+    if (lSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .95 * 0.91)
       leftAtSpeed = false;
     else 
     leftAtSpeed = true;
