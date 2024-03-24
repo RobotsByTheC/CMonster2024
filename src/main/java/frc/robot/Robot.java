@@ -439,7 +439,7 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
 
   private SequentialCommandGroup deadReckoningDiagonal() {
     return drive
-        .pointForward()
+        .pointForward().withTimeout(1.5).andThen(new PrintCommand("gonna drive now"))
         .andThen(drive.autoDriveDiagonalCommand())
         .andThen(drive.setXCommand());
   }
