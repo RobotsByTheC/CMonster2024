@@ -201,6 +201,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
   private void configureAutomaticBindings() {
     new Trigger(intermediary::noteCheck).onTrue(leds.blinkRed().withTimeout(1));
     new Trigger(shooter::atSpeakerSpeed).onTrue(leds.rainbowFlagScroll());
+    new Trigger(shooter::atAmpSpeed).onTrue(leds.rainbowFlagScroll());
   }
     
 
