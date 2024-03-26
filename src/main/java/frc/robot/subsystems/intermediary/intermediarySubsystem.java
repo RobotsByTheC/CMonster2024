@@ -49,7 +49,7 @@ public class IntermediarySubsystem extends SubsystemBase {
   }
 
   public Command intermediaryReverseCommand() {
-    return run(this::reverseSpin).withTimeout(.3).finallyDo(interrupted -> stopSpin());
+    return run(this::reverseSpin).finallyDo(interrupted -> stopSpin());
   }
 
   public Command holdCommand() {
