@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -74,7 +75,8 @@ public class Robot extends TimedRobot {
     NEXT2AMP,
     GOFORWARDS,
     CENTERSHOOTDRIVE,
-    DIAGONALSHOOTDRIVE
+    DIAGONALSHOOTDRIVE,
+    SABOTAGE
   }
 
   private final SendableChooser<Positions> startingPositionChooser = new SendableChooser<>();
@@ -144,6 +146,7 @@ shooter = new ShooterSubsystem(intermediary::noteCheck);
     noteChooser1.addOption("Next 2 Stage", Notes.NEXT2STAGE);
     noteChooser1.addOption("Go Forwards", Notes.GOFORWARDS);
     noteChooser1.addOption("centershootdrive", Notes.CENTERSHOOTDRIVE);
+    noteChooser1.addOption("sabotage", Notes.SABOTAGE);
 noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
     SmartDashboard.putData("note chooser 1", noteChooser1);
 
@@ -373,6 +376,9 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
           case NOTHING -> {
             done = true;
           }
+          case SABOTAGE -> {
+            auto = sabotage();
+          }
           default -> {
             done = true;
           }
@@ -433,9 +439,41 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
     .andThen(
             drive
                 .autoDriveForwardCommand()
-                .deadlineWith(intermediary.intermediaryCommand(), intake.intakeCommand()))
-        .andThen(drive.autoDriveBackwardCommand())
+                .alongWith(intermediary.intermediaryCommand()).alongWith(intake.intakeCommand())).withTimeout(1.1)
+        .andThen(drive.autoDriveBackwardCommand().withTimeout(1.1))
         .andThen(speakerShot());
+  }
+
+  private Command sabotage() {
+    return drive
+        .pointForward()
+                .withTimeout(1.5).andThen(new PrintCommand("gonna drive now"))
+                .andThen(drive.autoDriveForwardCommand()).withTimeout(.143)
+                .andThen(drive.autoTurn120())
+        .andThen(drive.autoDriveForwardCommand())
+        .withTimeout(3.5)
+        .andThen(drive.autoTurn90())
+        .andThen(drive.autoDriveForwardCommand()).alongWith(intermediary.intermediaryCommand())
+        .alongWith(intake.intakeCommand())
+        .alongWith(shooter.ampCommand()).withTimeout(3.5);
+  }
+
+  private Command threeNote() {
+    return deadReckoningForward()
+    .andThen(drive.autoDriveForwardCommand().withTimeout(1.1)).andThen(drive.autoTurn90())
+    .andThen(drive.autoDriveForwardCommand()).alongWith(intake.intakeCommand()).alongWith(intermediary.intermediaryCommand())
+    .withTimeout(0.7)
+    .andThen(drive.autoDriveBackwardCommand()).withTimeout(.7).andThen(drive.autoTurnNeg90())
+    .andThen(drive.autoDriveBackwardCommand()).withTimeout(1.1)
+    .andThen(speakerShot())
+
+    .andThen(drive.autoDriveForwardCommand().withTimeout(.143))
+    .andThen(drive.autoDriveSidewaysCommand().withTimeout(.7))
+    .andThen(drive.autoDriveForwardCommand().alongWith(intake.intakeCommand().alongWith(intermediary.intermediaryCommand())).withTimeout(1.4))
+    .andThen(drive.autoDriveBackwardCommand().withTimeout(1.4))
+    .andThen(drive.autoDriveSidewaysCommand().withTimeout(.7))
+    .andThen(drive.autoDriveForwardCommand().withTimeout(.143))
+    .andThen(speakerShot());
   }
 
   private SequentialCommandGroup deadReckoningDiagonal() {

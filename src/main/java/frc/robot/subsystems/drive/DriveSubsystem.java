@@ -371,8 +371,55 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               DegreesPerSecond.zero(),
               ReferenceFrame.ROBOT);
             System.out.println("driving forward");
-        })
-        .withTimeout(1.1);
+        });
+        
+        
+  }
+
+  public Command autoTurn90()
+  {
+    return run(() -> {
+      drive(
+        FeetPerSecond.of(0),
+        FeetPerSecond.of(0),
+        DegreesPerSecond.of(90),
+        ReferenceFrame.ROBOT);
+    }).withTimeout(1.5);
+
+    }
+    public Command autoTurnNeg90()
+  {
+    return run(() -> {
+      drive(
+        FeetPerSecond.of(0),
+        FeetPerSecond.of(0),
+        DegreesPerSecond.of(-90),
+        ReferenceFrame.ROBOT);
+    }).withTimeout(1.5);
+
+    }
+
+    public Command autoTurn120()
+    {
+      return run(() -> {
+        drive(
+        FeetPerSecond.of(0),
+        FeetPerSecond.of(0),
+        DegreesPerSecond.of(120),
+        ReferenceFrame.ROBOT);
+      }).withTimeout(1.5);
+    }
+  
+
+  public Command autoDriveSidewaysCommand() {
+    return run(() -> {
+          drive(
+              FeetPerSecond.of(0),
+              FeetPerSecond.of(7),
+              DegreesPerSecond.zero(),
+              ReferenceFrame.ROBOT);
+            System.out.println("driving sideways");
+        });
         
   }
 
@@ -383,8 +430,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               MetersPerSecond.of(0),
               DegreesPerSecond.zero(),
               ReferenceFrame.ROBOT);
-        })
-        .withTimeout(1.1);
+        });
   }
 
   public Command autoDriveDiagonalCommand() {
