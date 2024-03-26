@@ -61,25 +61,33 @@ rSparkPID.setP(.00);
     System.out.println("spinning motors");
   }
 
+  public void reverseSpin() {
+    rSparkPID.setReference(
+        -1700, CANSparkMax.ControlType.kVelocity);
+    lSparkPID.setReference(
+        -1700, CANSparkMax.ControlType.kVelocity);
+  }
+
   public boolean atSpeakerSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
-    if (rSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .9)
+    if (rSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .905)
       rightAtSpeed = false;
     else rightAtSpeed = true;
-    if (lSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .95 * 0.9)
+    if (lSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .95 * 0.905)
       leftAtSpeed = false;
-    else leftAtSpeed = true;
+    else 
+    leftAtSpeed = true;
     return rightAtSpeed && leftAtSpeed;
   }
 
   public boolean atAmpSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
-    if (rSparkEncoder.getVelocity() > 1040.6 * .9 && rSparkEncoder.getVelocity() < 1040.6*1.1)
+    if (rSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .8 && rSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed*1.2)
       rightAtSpeed = true;
     else rightAtSpeed = false;
-    if (lSparkEncoder.getVelocity() > 1040.6 * .9 && lSparkEncoder.getVelocity() < 1040.6*1.1) // 1040.6 is amp speed
+    if (lSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .8 && lSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed*1.2) // 1040.6 is amp speed
       leftAtSpeed = true;
     else leftAtSpeed = false;
     return rightAtSpeed && leftAtSpeed;
@@ -87,9 +95,9 @@ rSparkPID.setP(.00);
 
   public void ampShot() {
     rSparkPID.setReference(
-        1040.6, CANSparkMax.ControlType.kVelocity);
+        Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
     lSparkPID.setReference(
-        1040.6, CANSparkMax.ControlType.kVelocity);
+        Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
     System.out.println("spinning motors");
   }
 
@@ -114,7 +122,11 @@ rSparkPID.setP(.00);
   public Command autoShootCommand1() {
     System.out.println("shoot commanded");
     // return run(this::spin).finallyDo(interrupted -> stopSpin());
-    return run(this::spin).until(this::atSpeakerSpeed);
+    return run(this::spin).until(this::atSpeakerSpeed).withTimeout(3);
+  }
+
+  public Command reverseShooterCommand() {
+    return run(this::reverseSpin).finallyDo(interrupted -> stopSpin());
   }
 
   public Command autoShootCommand2() {
@@ -138,7 +150,7 @@ rSparkPID.setP(.00);
   }
 
   public Command ampCommand() {
-    return run(this::ampShot).finallyDo(interrupted -> stopSpin());
+    return run(this::ampShot);
   }
 
   @Override

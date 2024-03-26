@@ -40,7 +40,7 @@ public final class Constants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
     public static final Measure<Velocity<Distance>> maxSpeed = MetersPerSecond.of(4.5);
-    public static final Measure<Velocity<Angle>> maxAngularSpeed = RotationsPerSecond.of(1.0);
+    public static final Measure<Velocity<Angle>> maxAngularSpeed = RotationsPerSecond.of(2.0);
 
     public static final Measure<Velocity<Angle>> directionSlewRate = RadiansPerSecond.of(1.2);
     public static final Measure<Velocity<Dimensionless>> magnitudeSlewRate =
@@ -163,6 +163,7 @@ public final class Constants {
   public static final class ShooterConstants {
     public static final int rightShooterCanId = 13;
     public static final int leftShooterCanId = 16;
+    public static final int ampSpeed = 1150;
   }
 
   // intake constants

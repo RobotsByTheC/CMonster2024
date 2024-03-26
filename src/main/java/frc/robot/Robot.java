@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -172,13 +173,13 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
     .and(DriverStation::isTeleop)
     .whileTrue(drive.setXCommand());*/
     new JoystickButton(driverController, PS4Controller.Button.kL1.value)
-        .whileTrue(shooter.manualShootCommand().deadlineWith(leds.rainbowFlagScroll()));
+        .whileTrue(shooter.manualShootCommand()).whileTrue(leds.blinkGreen()).onFalse(leds.greenPurpleScroll());
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
         .whileTrue(intermediary.intermediaryCommand())
         .whileTrue(intake.intakeCommand())
         .whileFalse(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
-        .whileTrue(shooter.ampCommand().deadlineWith(leds.blinkPurple()));
+        .whileTrue(shooter.ampCommand().deadlineWith(leds.blinkPurple())).onFalse(shooter.stopSpinCommand());
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
         .and(DriverStation::isTest)
         .whileTrue(
@@ -188,9 +189,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
                 .andThen(drive.sysIdDynamic(Direction.kReverse))
                 .andThen(drive.sysIdQuasistatic(Direction.kReverse)));
     new JoystickButton(driverController, PS4Controller.Button.kCircle.value)
-        .whileTrue(intake.spinReverseCommand());
-    new JoystickButton(driverController, PS4Controller.Button.kR3.value)
-        .whileTrue(shooter.ampCommand());
+        .whileTrue(intake.spinReverseCommand()).whileTrue(shooter.reverseShooterCommand()).whileTrue(intermediary.intermediaryReverseCommand());
     new JoystickButton(driverController, PS4Controller.Button.kR1.value)
         .whileTrue(climber.climbCommand())
         .onFalse(climber.stopClimbCommand());
@@ -200,8 +199,11 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
   }
 
   private void configureAutomaticBindings() {
-    new Trigger(intermediary::noteCheck).onTrue(leds.crazyWhiteBlink().withTimeout(2));
+    new Trigger(intermediary::noteCheck).onTrue(leds.blinkRed().withTimeout(1));
+    new Trigger(shooter::atSpeakerSpeed).onTrue(leds.rainbowFlagScroll());
+    new Trigger(shooter::atAmpSpeed).onTrue(leds.rainbowFlagScroll());
   }
+    
 
   /**
    * Gets the command to run in autonomous based on user selection in a dashboard.
@@ -273,7 +275,8 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
           case NOTHING -> {
             done = true;
           }
-          case CENTERSHOOTDRIVE -> auto = auto.andThen(deadReckoningForward());
+          case CENTERSHOOTDRIVE -> {auto = auto.andThen(deadReckoningForward());
+          done = true;}
           default -> {
             done = true;
           }
@@ -423,10 +426,11 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
   }
 
   private SequentialCommandGroup deadReckoningForward() {
-    return drive
+    return new PrintCommand("deadReckoningForward")
+    .andThen(drive
         .pointForward()
-                .withTimeout(1)
-.andThen(
+                .withTimeout(1.5)).andThen(new PrintCommand("gonna drive now"))
+    .andThen(
             drive
                 .autoDriveForwardCommand()
                 .deadlineWith(intermediary.intermediaryCommand(), intake.intakeCommand()))
@@ -436,7 +440,7 @@ case DIAGONALSHOOTDRIVE -> auto = auto.andThen(deadReckoningDiagonal());
 
   private SequentialCommandGroup deadReckoningDiagonal() {
     return drive
-        .pointForward()
+        .pointForward().withTimeout(1.5).andThen(new PrintCommand("gonna drive now"))
         .andThen(drive.autoDriveDiagonalCommand())
         .andThen(drive.setXCommand());
   }

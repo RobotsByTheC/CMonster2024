@@ -71,7 +71,7 @@ public class AddressableLEDBufferView extends AddressableLEDBuffer implements LE
 
   @Override
   public void setRGB(int index, int r, int g, int b) {
-    backingBuffer.setRGB(nativeIndex(index), r, g, b);
+    backingBuffer.setRGB(nativeIndex(index),(int) (r *.7),(int) (g*.7),(int) (b*.7));
   }
 
   @Override
