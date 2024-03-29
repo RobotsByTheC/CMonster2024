@@ -364,67 +364,65 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   }
 
   public Command autoDriveForwardCommand() {
-    return run(() -> {
+    return run(
+        () -> {
           drive(
               FeetPerSecond.of(7),
               MetersPerSecond.of(0),
               DegreesPerSecond.zero(),
               ReferenceFrame.ROBOT);
-            System.out.println("driving forward");
+          System.out.println("driving forward");
         });
-        
-        
   }
 
-  public Command autoTurn90()
-  {
+  public Command autoTurn90() {
     return run(() -> {
-      drive(
-        FeetPerSecond.of(0),
-        FeetPerSecond.of(0),
-        DegreesPerSecond.of(90),
-        ReferenceFrame.ROBOT);
-    }).withTimeout(1.5);
+          drive(
+              FeetPerSecond.of(0),
+              FeetPerSecond.of(0),
+              DegreesPerSecond.of(90),
+              ReferenceFrame.ROBOT);
+        })
+        .withTimeout(1.5);
+  }
 
-    }
-    public Command autoTurnNeg90()
-  {
+  public Command autoTurnNeg90() {
     return run(() -> {
-      drive(
-        FeetPerSecond.of(0),
-        FeetPerSecond.of(0),
-        DegreesPerSecond.of(-90),
-        ReferenceFrame.ROBOT);
-    }).withTimeout(1.5);
+          drive(
+              FeetPerSecond.of(0),
+              FeetPerSecond.of(0),
+              DegreesPerSecond.of(-90),
+              ReferenceFrame.ROBOT);
+        })
+        .withTimeout(1.5);
+  }
 
-    }
-
-    public Command autoTurn120()
-    {
-      return run(() -> {
-        drive(
-        FeetPerSecond.of(0),
-        FeetPerSecond.of(0),
-        DegreesPerSecond.of(120),
-        ReferenceFrame.ROBOT);
-      }).withTimeout(1.5);
-    }
-  
+  public Command autoTurn120() {
+    return run(() -> {
+          drive(
+              FeetPerSecond.of(0),
+              FeetPerSecond.of(0),
+              DegreesPerSecond.of(120),
+              ReferenceFrame.ROBOT);
+        })
+        .withTimeout(1.5);
+  }
 
   public Command autoDriveSidewaysCommand() {
-    return run(() -> {
+    return run(
+        () -> {
           drive(
               FeetPerSecond.of(0),
               FeetPerSecond.of(7),
               DegreesPerSecond.zero(),
               ReferenceFrame.ROBOT);
-            System.out.println("driving sideways");
+          System.out.println("driving sideways");
         });
-        
   }
 
   public Command autoDriveBackwardCommand() {
-    return run(() -> {
+    return run(
+        () -> {
           drive(
               FeetPerSecond.of(-7),
               MetersPerSecond.of(0),
@@ -442,5 +440,5 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               ReferenceFrame.ROBOT);
         })
         .withTimeout(6);
-}
+  }
 }

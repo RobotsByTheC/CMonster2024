@@ -2,13 +2,10 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RPM;
 
-import java.util.function.BooleanSupplier;
-
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Constants.NeoMotorConstants;
+import java.util.function.BooleanSupplier;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -23,7 +21,7 @@ public class ShooterSubsystem extends SubsystemBase {
       new CANSparkMax(Constants.ShooterConstants.rightShooterCanId, MotorType.kBrushless);
   private final CANSparkMax lSpark =
       new CANSparkMax(Constants.ShooterConstants.leftShooterCanId, MotorType.kBrushless);
-private final SparkPIDController rSparkPID = rSpark.getPIDController();
+  private final SparkPIDController rSparkPID = rSpark.getPIDController();
   private final SparkPIDController lSparkPID = lSpark.getPIDController();
   private final RelativeEncoder rSparkEncoder = rSpark.getEncoder();
   private final RelativeEncoder lSparkEncoder = lSpark.getEncoder();
@@ -31,25 +29,24 @@ private final SparkPIDController rSparkPID = rSpark.getPIDController();
   private final BooleanSupplier hasNote;
 
   public ShooterSubsystem(BooleanSupplier hasNote) {
-this.hasNote = hasNote;
+    this.hasNote = hasNote;
 
     rSpark.restoreFactoryDefaults();
     lSpark.restoreFactoryDefaults();
     lSpark.setInverted(true);
-rSparkPID.setP(.00);
+    rSparkPID.setP(.00);
     rSparkPID.setI(0);
     rSparkPID.setD(0);
-    rSparkPID.setFF((1 / NeoMotorConstants.freeSpeedRpm.in(RPM))+.00002);
+    rSparkPID.setFF((1 / NeoMotorConstants.freeSpeedRpm.in(RPM)) + .00002);
     lSparkPID.setP(.00);
     lSparkPID.setI(0);
     lSparkPID.setD(0);
-    lSparkPID.setFF((1 / NeoMotorConstants.freeSpeedRpm.in(RPM))+.00002);
+    lSparkPID.setFF((1 / NeoMotorConstants.freeSpeedRpm.in(RPM)) + .00002);
 
     Shuffleboard.getTab("Shooter").addBoolean("at speaker speed", atSpeakerSpeed);
     Shuffleboard.getTab("Shooter").addNumber("L shooter speed", lSparkEncoder::getVelocity);
     Shuffleboard.getTab("Shooter").addNumber("R shooter speed", rSparkEncoder::getVelocity);
     Shuffleboard.getTab("Shooter").addBoolean("at amp speed", this::atAmpSpeed);
-
   }
 
   public void spin() {
@@ -62,10 +59,8 @@ rSparkPID.setP(.00);
   }
 
   public void reverseSpin() {
-    rSparkPID.setReference(
-        -1700, CANSparkMax.ControlType.kVelocity);
-    lSparkPID.setReference(
-        -1700, CANSparkMax.ControlType.kVelocity);
+    rSparkPID.setReference(-1700, CANSparkMax.ControlType.kVelocity);
+    lSparkPID.setReference(-1700, CANSparkMax.ControlType.kVelocity);
   }
 
   public boolean atSpeakerSpeed() {
@@ -76,28 +71,28 @@ rSparkPID.setP(.00);
     else rightAtSpeed = true;
     if (lSparkEncoder.getVelocity() < NeoMotorConstants.freeSpeedRpm.in(RPM) * .95 * 0.905)
       leftAtSpeed = false;
-    else 
-    leftAtSpeed = true;
+    else leftAtSpeed = true;
     return rightAtSpeed && leftAtSpeed;
   }
 
   public boolean atAmpSpeed() {
     boolean rightAtSpeed;
     boolean leftAtSpeed;
-    if (rSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .8 && rSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed*1.2)
+    if (rSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .8
+        && rSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed * 1.2)
       rightAtSpeed = true;
     else rightAtSpeed = false;
-    if (lSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .8 && lSparkEncoder.getVelocity() < Constants.ShooterConstants.ampSpeed*1.2) // 1040.6 is amp speed
-      leftAtSpeed = true;
+    if (lSparkEncoder.getVelocity() > Constants.ShooterConstants.ampSpeed * .8
+        && lSparkEncoder.getVelocity()
+            < Constants.ShooterConstants.ampSpeed * 1.2) // 1040.6 is amp speed
+    leftAtSpeed = true;
     else leftAtSpeed = false;
     return rightAtSpeed && leftAtSpeed;
   }
 
   public void ampShot() {
-    rSparkPID.setReference(
-        Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
-    lSparkPID.setReference(
-        Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
+    rSparkPID.setReference(Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
+    lSparkPID.setReference(Constants.ShooterConstants.ampSpeed, CANSparkMax.ControlType.kVelocity);
     System.out.println("spinning motors");
   }
 
@@ -132,7 +127,10 @@ rSparkPID.setP(.00);
   public Command autoShootCommand2() {
     System.out.println("shoot commanded");
     // return run(this::spin).finallyDo(interrupted -> stopSpin());
-    return run(this::spin).until(() -> !hasNote.getAsBoolean()).withTimeout(2).finallyDo(interrupted -> stopSpin());
+    return run(this::spin)
+        .until(() -> !hasNote.getAsBoolean())
+        .withTimeout(2)
+        .finallyDo(interrupted -> stopSpin());
   }
 
   public Command autoAlwaysShootCommand() {
