@@ -59,8 +59,10 @@ public class ShooterSubsystem extends SubsystemBase {
   }
 
   public void reverseSpin() {
-    rSparkPID.setReference(-1700, CANSparkMax.ControlType.kVelocity);
-    lSparkPID.setReference(-1700, CANSparkMax.ControlType.kVelocity);
+    rSparkPID.setReference(
+        Constants.ShooterConstants.reverseSpeed, CANSparkMax.ControlType.kVelocity);
+    lSparkPID.setReference(
+        Constants.ShooterConstants.reverseSpeed, CANSparkMax.ControlType.kVelocity);
   }
 
   public boolean atSpeakerSpeed() {

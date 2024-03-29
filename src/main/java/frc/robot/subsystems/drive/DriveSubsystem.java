@@ -48,6 +48,12 @@ import java.util.function.DoubleSupplier;
 
 public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   private final SwerveIO io;
+  private final PIDController xController =
+      new PIDController(Constants.AutoConstants.pXController, 0, 0);
+  private final PIDController yController =
+      new PIDController(Constants.AutoConstants.pYController, 0, 0);
+  private final PIDController thetaController =
+      new PIDController(Constants.AutoConstants.pThetaController, 0, 0);
 
   // Odometry class for tracking robot pose
   private final SwerveDrivePoseEstimator poseEstimator;
@@ -62,7 +68,7 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem(SwerveIO io) {
     this.io = io;
-
+    thetaController.enableContinuousInput(-Math.PI, Math.PI);
     poseEstimator =
         new SwerveDrivePoseEstimator(
             DriveConstants.driveKinematics,
@@ -84,6 +90,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
     SmartDashboard.putData("FR", io.frontRight());
     SmartDashboard.putData("RL", io.rearLeft());
     SmartDashboard.putData("RR", io.rearRight());
+    Shuffleboard.getTab("Drive").add("x controller", xController);
+    Shuffleboard.getTab("Drive").add("y controller", yController);
+    Shuffleboard.getTab("Drive").add("theta controller", thetaController);
 
     Shuffleboard.getTab("Drive")
         .add("zero heading", runOnce(this::zeroHeading).ignoringDisable(true));
@@ -220,9 +229,9 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
         Choreo.choreoSwerveCommand(
             traj,
             this::getPose,
-            new PIDController(Constants.AutoConstants.pXController, 0, 0),
-            new PIDController(Constants.AutoConstants.pYController, 0, 0),
-            new PIDController(Constants.AutoConstants.pThetaController, 0, 0),
+            xController,
+            yController,
+            thetaController,
             this::drive,
             () -> {
               if (DriverStation.getAlliance().isEmpty()) return false;
@@ -440,5 +449,15 @@ public class DriveSubsystem extends SubsystemBase implements AutoCloseable {
               ReferenceFrame.ROBOT);
         })
         .withTimeout(6);
+  }
+
+  public Command moveToPosition() {
+    return run(() -> {
+      var pose = getPose();
+      var xSpeed = MetersPerSecond.of(xController.calculate(pose.getX()));
+      var ySpeed = MetersPerSecond.of(yController.calculate(pose.getY()));
+      var thetaSpeed = RadiansPerSecond.of(thetaController.calculate(getHeading().getRadians()));
+      drive(xSpeed, ySpeed, thetaSpeed, ReferenceFrame.FIELD);
+    });
   }
 }
