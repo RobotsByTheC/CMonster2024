@@ -180,7 +180,7 @@ noteChooser1.addOption("diagonal shoot drive", Notes.DIAGONALSHOOTDRIVE);
     new JoystickButton(driverController, PS4Controller.Button.kTriangle.value)
         .whileTrue(intermediary.intermediaryCommand())
         .whileTrue(intake.intakeCommand())
-        .whileFalse(intermediary.intermediaryReverseCommand());
+        .onFalse(intermediary.intermediaryReverseCommand().withTimeout(.2));
     new JoystickButton(driverController, PS4Controller.Button.kSquare.value)
         .whileTrue(shooter.ampCommand().deadlineWith(leds.blinkPurple())).onFalse(shooter.stopSpinCommand());
     new JoystickButton(driverController, PS4Controller.Button.kCross.value)
